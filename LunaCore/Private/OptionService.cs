@@ -9,6 +9,7 @@ namespace Luna.Core
 		public string Description { get; set; } = "";
 		public bool IsEnabled { get; set; }
 		public string Category { get; set; } = "";
+		public Guid DependsOn { get; set; } = Guid.Empty;
 	}
 
 	[JsonSourceGenerationOptions(WriteIndented = true)]
@@ -86,20 +87,18 @@ namespace Luna.Core
 			return m_optionByGuid.Remove(guid);
 		}
 
-
-
-		internal bool SaveToFile()
+		public bool SaveToFile()
 		{
 			string cacheFilePath = Path.Combine(Cache.GetCacheFolder(), c_optionsFile);
 
-			Dictionary<Guid, bool> options = new();
+			Dictionary<Guid, bool> options = [];
 			foreach (var opt in m_optionByGuid)
 			{
 				options.Add(opt.Key, opt.Value.IsEnabled);
 			}
 
 			string optionsJSON = JsonSerializer.Serialize(options, typeof(Dictionary<Guid, bool>), OptionDictSourceGenerationContext.Default);
-			
+
 			if (!Directory.Exists(Cache.GetCacheFolder()))
 			{
 				Directory.CreateDirectory(Cache.GetCacheFolder());
@@ -110,7 +109,7 @@ namespace Luna.Core
 			return true;
 		}
 
-		internal bool LoadFromFile()
+		public bool LoadFromFile()
 		{
 			string cacheFilePath = Path.Combine(Cache.GetCacheFolder(), c_optionsFile);
 			if (!File.Exists(cacheFilePath))
@@ -120,8 +119,7 @@ namespace Luna.Core
 
 			try
 			{
-				Dictionary<Guid, bool>? options = JsonSerializer.Deserialize(File.ReadAllText(cacheFilePath), typeof(Dictionary<Guid, bool>), OptionDictSourceGenerationContext.Default) as Dictionary<Guid, bool>;
-				if (options == null)
+				if (JsonSerializer.Deserialize(File.ReadAllText(cacheFilePath), typeof(Dictionary<Guid, bool>), OptionDictSourceGenerationContext.Default) is not Dictionary<Guid, bool> options)
 				{
 					LunaConsole.ErrorLine($"Could not read options cache.");
 					return false;

@@ -2,13 +2,24 @@
 
 namespace Luna.Targets.VisualStudio
 {
-	public class CSolution(string solutionPath) : ISolution
+	public class Solution(string solutionPath) : ISolution
 	{
+		private readonly List<IProject> _projects = [];
+
 		public string SolutionPath { get; } = solutionPath;
 
-		public IProject AddProject()
+		public bool AddProject(IProject project)
 		{
-			throw new NotImplementedException();
+			_projects.Add(project);
+
+			return true;
+		}
+
+		public bool WriteFile()
+		{
+			Directory.CreateDirectory(Path.GetDirectoryName(SolutionPath));
+			File.WriteAllText(SolutionPath, "");
+			return true;
 		}
 	}
 }

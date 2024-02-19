@@ -6,7 +6,7 @@ namespace Luna.Meta.Cpp.Projects
 	{
 		public void Register()
 		{
-			CServiceProvider.RegistryService.RegisterMetaService(this);
+			ServiceProvider.RegistryService.RegisterMetaService(this);
 		}
 	}
 }

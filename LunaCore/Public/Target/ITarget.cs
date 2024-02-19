@@ -1,13 +1,15 @@
 ﻿namespace Luna.Core.Target
 {
-    public interface ITarget
-    {
-        string Name { get; }
+	public interface ITarget
+	{
+		string Name { get; }
 
-        string SolutionPath { get; set; }
+		string SolutionFolder { get; }
 
-        void Register();
+		string FullSolutionPath { get; }
 
-        void GenerateSolution();
-    }
+		void Register();
+
+		bool GenerateSolution();
+	}
 }

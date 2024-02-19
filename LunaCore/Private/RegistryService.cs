@@ -2,25 +2,30 @@ using Luna.Core.Target;
 
 namespace Luna.Core
 {
-    internal class RegistryService : IRegistryService
+	internal class RegistryService : IRegistryService
 	{
 		#region Members
+
 		private static RegistryService _instance = new();
-		private Dictionary<Guid, IBuild> _buildServiceByGuid = new();
-		private Dictionary<Guid, IMeta> _metaServiceByGuid = new();
-		private Dictionary<Guid, ITarget> _targetByGuid = new();
-		#endregion
+		private Dictionary<Guid, IBuild> _buildServiceByGuid = [];
+		private Dictionary<Guid, IMeta> _metaServiceByGuid = [];
+		private Dictionary<Guid, ITarget> _targetByGuid = [];
+
+		#endregion Members
 
 		#region Properties
+
 		internal static RegistryService Instance { get => _instance; }
-		#endregion
+
+		#endregion Properties
 
 		#region Constructor
+
 		private RegistryService()
 		{
-
 		}
-		#endregion
+
+		#endregion Constructor
 
 		public bool RegisterBuildService<T>(T buildService) where T : IBuild
 		{
@@ -157,6 +162,32 @@ namespace Luna.Core
 			}
 
 			return _targetByGuid[guid];
+		}
+
+		public int GetTargetCount()
+		{
+			return _targetByGuid.Count;
+		}
+
+		public ITarget? GetTargetAt(int index)
+		{
+			if (index >= GetTargetCount())
+			{
+				LunaConsole.ErrorLine($"{index} is out of range for registered targets.");
+				return null;
+			}
+
+			int curIndex = 0;
+			foreach (var item in _targetByGuid)
+			{
+				if (curIndex == index)
+				{
+					return item.Value;
+				}
+				++curIndex;
+			}
+
+			return null;
 		}
 	}
 }

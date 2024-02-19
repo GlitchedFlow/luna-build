@@ -12,6 +12,7 @@ namespace Luna.Core
 		public string SolutionPath { get; set; } = "";
 		public List<string> Plugins { get; set; } = [];
 		public List<string> Targets { get; set; } = [];
+		public string Name { get; set; } = "";
 
 		public static bool Load(string configPath)
 		{

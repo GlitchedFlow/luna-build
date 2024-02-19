@@ -1,9 +1,9 @@
-﻿using LunaCore.Public.Target;
-
-namespace Luna.Core.Target
+﻿namespace Luna.Core.Target
 {
 	public interface ISolution
 	{
-		public IProject AddProject();
+		public bool AddProject(IProject project);
+
+		public bool WriteFile();
 	}
 }

@@ -3,15 +3,15 @@ using Luna.Core.Target;
 
 namespace Luna.Core
 {
-    /// <summary>
-    /// Class which kickstarts meta and build services within Luna Bridge.
-    /// </summary>
-    public class Kickstart
+	/// <summary>
+	/// Class which kickstarts meta and build services within Luna Bridge.
+	/// </summary>
+	public class Kickstart
 	{
 		/// <summary>
 		/// Kickstart the Luna bridge.
 		/// </summary>
-		public void Initialize()
+		public static void Initialize()
 		{
 			LunaConsole.WriteLine($"Initializing LunaBridge");
 
@@ -25,7 +25,7 @@ namespace Luna.Core
 			LunaConsole.CloseScope();
 		}
 
-		private void InitializePlugins()
+		private static void InitializePlugins()
 		{
 			LunaConsole.WriteLine($"Initializing Plugins");
 
@@ -64,7 +64,7 @@ namespace Luna.Core
 			LunaConsole.CloseScope();
 		}
 
-		private void InitializeBridge()
+		private static void InitializeBridge()
 		{
 			const string lunaBridgeDll = "LunaBridge.dll";
 
@@ -118,36 +118,10 @@ namespace Luna.Core
 				return;
 			}
 
-			OptionService? optionService = (OptionService?)RegistryService.Instance.GetMetaService<IOptionService>();
-			if (optionService == null)
-			{
-				LunaConsole.ErrorLine($"Option Service was not registered.");
-				return;
-			}
-
-			optionService.Clear();
-
-			int serviceCount = CServiceProvider.RegistryService.GetBuildServiceCount();
-			for (int curIndex = 0; curIndex < serviceCount; ++curIndex)
-			{
-				IBuild? build = CServiceProvider.RegistryService.GetBuildServiceAt(curIndex);
-				build?.Configurate();
-			}
-
-			optionService.LoadFromFile();
-
-			//if (!CRegistryService.Instance.GenerateSolution())
-			//{
-			//	CLunaConsole.ErrorLine("Generating solution failed.");
-			//	return;
-			//}
-
-			optionService.SaveToFile();
-
 			LunaConsole.CloseScope();
 		}
 
-		private void InitializeTargets()
+		private static void InitializeTargets()
 		{
 			LunaConsole.WriteLine($"Initializing Targets");
 
@@ -183,7 +157,7 @@ namespace Luna.Core
 			LunaConsole.CloseScope();
 		}
 
-		private void InitializeCoreServices()
+		private static void InitializeCoreServices()
 		{
 			LunaConsole.WriteLine($"Initializing Core Services");
 

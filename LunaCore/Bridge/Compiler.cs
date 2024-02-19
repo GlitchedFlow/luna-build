@@ -9,8 +9,6 @@ namespace Luna.Core
 	/// </summary>
 	public class Compiler
 	{
-
-
 		private static string _bridgeProject = "<Project Sdk=\"Microsoft.NET.Sdk\">\r\n\r\n"
 												+ "\t<PropertyGroup>\r\n"
 													+ "\t\t<TargetFramework>net8.0</TargetFramework>\r\n"
@@ -34,7 +32,7 @@ namespace Luna.Core
 		/// Compiles the Luna Bridge.
 		/// </summary>
 		/// <param name="configPath">Path to the compiler config</param>
-		public bool Compile(string configPath)
+		public static bool Compile(string configPath)
 		{
 			LunaConsole.WriteLine("Compiling LunaBridge");
 
