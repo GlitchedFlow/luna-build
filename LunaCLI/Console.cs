@@ -4,16 +4,22 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Luna.CLI
 {
-	public class CConsole
+	/// <summary>
+	/// CLI host console.
+	/// </summary>
+	public class Console
 	{
+		/// <summary>
+		/// Main entry point.
+		/// </summary>
+		/// <param name="args">consoel arguments</param>
+		/// <returns>0 if no errors, otherwise -1.</returns>
 		[RequiresAssemblyFiles()]
 		public static int Main(string[] args)
 		{
-			LunaConsole.WriteLine("Luna Build System");
+			Kickstart.InitializeCoreServices();
 
-			LunaConsole.OpenScope();
-
-			LunaConsole.WriteLine("Initializing...");
+			ILogService? log = ServiceProvider.RegistryService.GetMetaService<ILogService>();
 
 			if (!ArgumentParser.Instance.Parse(args))
 			{
@@ -33,7 +39,9 @@ namespace Luna.CLI
 				}
 			}
 
-			Kickstart.Initialize();
+			Kickstart.InitializeTargets();
+			Kickstart.InitializePlugins();
+			Kickstart.InitializeBridge();
 
 			IConfiguratorService? configuratorService = ServiceProvider.RegistryService.GetMetaService<IConfiguratorService>();
 			configuratorService?.Configurate();
@@ -41,35 +49,35 @@ namespace Luna.CLI
 			IGeneratorService? generatorService = ServiceProvider.RegistryService.GetMetaService<IGeneratorService>();
 			if (generatorService == null)
 			{
-				LunaConsole.ErrorLine($"Generator Service is unavailable.");
+				log?.LogError($"Generator Service is unavailable.");
 				return -1;
 			}
 
 			int targetCount = ServiceProvider.RegistryService.GetTargetCount();
 			if (targetCount <= 0)
 			{
-				LunaConsole.ErrorLine($"No targets available.");
+				log?.LogError($"No targets available.");
 				return -1;
 			}
 
-			LunaConsole.WriteLine($"Please enter the number of the target you want to generate the solution for. Available Targets ({targetCount}):");
+			log?.Log($"Please enter the number of the target you want to generate the solution for. Available Targets ({targetCount}):");
 			for (int curIndex = 0; curIndex < targetCount; ++curIndex)
 			{
 				ITarget? curTarget = ServiceProvider.RegistryService.GetTargetAt(curIndex);
 				if (curTarget != null)
 				{
-					LunaConsole.WriteLine($"{curIndex + 1}: {curTarget.Name}");
+					log?.Log($"{curIndex + 1}: {curTarget.Name}");
 				}
 			}
 
 			bool validSelection = false;
 			while (!validSelection)
 			{
-				if (int.TryParse(Console.ReadLine(), out int inputValue))
+				if (int.TryParse(System.Console.ReadLine(), out int inputValue))
 				{
 					if (inputValue > targetCount || inputValue <= 0)
 					{
-						LunaConsole.ErrorLine($"{inputValue} is out of range. Please enter a number between 1 and {targetCount}.");
+						log?.LogError($"{inputValue} is out of range. Please enter a number between 1 and {targetCount}.");
 					}
 					else
 					{
@@ -79,20 +87,19 @@ namespace Luna.CLI
 				}
 				else
 				{
-					LunaConsole.ErrorLine($"Invalid selection. Please enter a number between 1 and {targetCount}.");
+					log?.LogError($"Invalid selection. Please enter a number between 1 and {targetCount}.");
 				}
 			}
 
-			LunaConsole.InfoLine($"Generating solution for: {generatorService?.ActiveTarget?.Name}");
-			LunaConsole.InfoLine($"Solution Path: {Path.Combine(Path.GetFullPath(LunaConfig.Instance.SolutionPath), generatorService.ActiveTarget.SolutionFolder)}");
+			log?.LogInfo($"Generating solution for: {generatorService?.ActiveTarget?.Name}");
+			log?.LogInfo($"Solution Path: {Path.Combine(Path.GetFullPath(LunaConfig.Instance.SolutionPath), generatorService.ActiveTarget.SolutionFolder)}");
 
 			bool? wasGenerated = generatorService?.Generate();
 
 			if (wasGenerated != null && wasGenerated == false)
 			{
+				log?.LogError($"Solution was not generated.");
 			}
-
-			LunaConsole.CloseScope();
 
 			return 0;
 		}

@@ -34,13 +34,13 @@ namespace Luna.Core
 		/// <param name="configPath">Path to the compiler config</param>
 		public static bool Compile(string configPath)
 		{
-			LunaConsole.WriteLine("Compiling LunaBridge");
+			Log.Write("Compiling LunaBridge");
 
-			LunaConsole.OpenScope();
+			Log.OpenScope();
 
 			if (!File.Exists(configPath))
 			{
-				LunaConsole.ErrorLine($"Config file not found at {configPath}");
+				Log.Error($"Config file not found at {configPath}");
 				return false;
 			}
 
@@ -51,7 +51,7 @@ namespace Luna.Core
 				string fullPath = Path.Combine([Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Plugins", requestedPlugin]);
 				if (!File.Exists(fullPath))
 				{
-					LunaConsole.ErrorLine($"Plugin {fullPath} not found.");
+					Log.Error($"Plugin {fullPath} not found.");
 					continue;
 				}
 
@@ -65,7 +65,7 @@ namespace Luna.Core
 				string fullPath = Path.Combine([Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Targets", requestedTarget]);
 				if (!File.Exists(fullPath))
 				{
-					LunaConsole.ErrorLine($"Target {fullPath} not found.");
+					Log.Error($"Target {fullPath} not found.");
 					continue;
 				}
 
@@ -90,23 +90,55 @@ namespace Luna.Core
 
 			try
 			{
-				Process compiler = Process.Start("dotnet", ["build", projectPath]);
+				Process compiler = new();
+				compiler.StartInfo.UseShellExecute = false;
+				compiler.StartInfo.RedirectStandardOutput = true;
+				compiler.StartInfo.FileName = "dotnet";
+				compiler.StartInfo.Arguments = $"build {projectPath}";
+				compiler.Start();
+
+				string compilerLog = compiler.StandardOutput.ReadToEnd();
 
 				compiler.WaitForExit();
 
+				foreach (var logLine in compilerLog.Split("\r\n"))
+				{
+					string trimmed = logLine.Trim();
+					if (trimmed.Contains("info"))
+					{
+						Log.Info(trimmed);
+					}
+					else if (trimmed.Contains("warning"))
+					{
+						Log.Warning(trimmed);
+					}
+					else if (trimmed.Contains("error"))
+					{
+						Log.Error(trimmed);
+					}
+					else if (trimmed.Contains("succeed"))
+					{
+						Log.Succes(trimmed);
+					}
+					else
+					{
+						Log.Write(trimmed);
+					}
+				}
+
 				if (compiler.ExitCode != 0)
 				{
-					LunaConsole.ErrorLine($"Compilation was not successful. Exit Code:{compiler.ExitCode}");
+					Log.Error($"Compilation was not successful. Exit Code:{compiler.ExitCode}");
 
-					LunaConsole.CloseScope();
+					Log.CloseScope();
 					return false;
 				}
 			}
 			catch (Exception)
 			{
-				LunaConsole.ErrorLine("Compiler not available. Please install .NET 8.0 SDK");
+				Log.Error("Compiler not available. Please install .NET 8.0 SDK");
 
-				LunaConsole.CloseScope();
+				Log.CloseScope();
 				return false;
 			}
 
@@ -118,7 +150,7 @@ namespace Luna.Core
 
 			File.Copy(lunaBridgeCompiledPath, lunaBridgeTargetPath, true);
 
-			LunaConsole.CloseScope();
+			Log.CloseScope();
 			return true;
 		}
 	}

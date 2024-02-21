@@ -14,6 +14,9 @@ namespace Luna.Targets.VisualStudio
 		public void Register()
 		{
 			ServiceProvider.RegistryService.RegisterTarget(this);
+
+			// Register project generators.
+			new ProjectGenerators.Cpp.Generator().Register();
 		}
 
 		public bool GenerateSolution()
@@ -26,10 +29,12 @@ namespace Luna.Targets.VisualStudio
 			{
 				IBuild? buildable = ServiceProvider.RegistryService.GetBuildServiceAt(curIndex);
 				IProject? project = buildable?.Generate(solution);
-				if (project != null)
+				if (project == null)
 				{
-					solution.AddProject(project);
+					continue;
 				}
+
+				solution.AddProject(project);
 			}
 
 			return solution.WriteFile();

@@ -1,13 +1,19 @@
 ﻿namespace Luna.Core
 {
+	/// <summary>
+	/// Core service class that is used to configurate build services.
+	/// </summary>
 	internal class ConfiguratorService : IConfiguratorService
 	{
+		/// <summary>
+		/// Configurate all build services.
+		/// </summary>
 		public void Configurate()
 		{
 			OptionService? optionService = (OptionService?)RegistryService.Instance.GetMetaService<IOptionService>();
 			if (optionService == null)
 			{
-				LunaConsole.ErrorLine($"Option Service was not registered.");
+				Log.Error($"Option Service was not registered.");
 				return;
 			}
 
@@ -26,6 +32,9 @@
 			optionService.SaveToFile();
 		}
 
+		/// <summary>
+		/// Register the service. Called by system.
+		/// </summary>
 		public void Register()
 		{
 			ServiceProvider.RegistryService.RegisterMetaService((IConfiguratorService)this);

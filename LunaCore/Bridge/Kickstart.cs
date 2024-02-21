@@ -9,33 +9,19 @@ namespace Luna.Core
 	public class Kickstart
 	{
 		/// <summary>
-		/// Kickstart the Luna bridge.
+		/// Initializes all plugins.
 		/// </summary>
-		public static void Initialize()
+		public static void InitializePlugins()
 		{
-			LunaConsole.WriteLine($"Initializing LunaBridge");
+			Log.Write($"Initializing Plugins");
 
-			LunaConsole.OpenScope();
-
-			InitializeCoreServices();
-			InitializeTargets();
-			InitializePlugins();
-			InitializeBridge();
-
-			LunaConsole.CloseScope();
-		}
-
-		private static void InitializePlugins()
-		{
-			LunaConsole.WriteLine($"Initializing Plugins");
-
-			LunaConsole.OpenScope();
+			Log.OpenScope();
 
 			DirectoryInfo pluginDir = new("./Plugins");
 
 			if (!pluginDir.Exists)
 			{
-				LunaConsole.CloseScope();
+				LogService.Instance.CloseScope();
 				return;
 			}
 
@@ -57,26 +43,31 @@ namespace Luna.Core
 				}
 				catch (Exception)
 				{
-					LunaConsole.ErrorLine($"Unable to handle {file.FullName}");
+					Log.Error($"Unable to handle {file.FullName}");
 				}
 			}
 
-			LunaConsole.CloseScope();
+			Log.CloseScope();
 		}
 
-		private static void InitializeBridge()
+		/// <summary>
+		/// Initializes the luna bridge.
+		/// </summary>
+		public static void InitializeBridge()
 		{
+			Log.Write($"Initializing LunaBridge");
+
 			const string lunaBridgeDll = "LunaBridge.dll";
 
 			if (!File.Exists(lunaBridgeDll))
 			{
-				LunaConsole.ErrorLine($"Luna Bridge assembly not found. Given path was: '${lunaBridgeDll}'");
+				Log.Error($"Luna Bridge assembly not found. Given path was: '${lunaBridgeDll}'");
 				return;
 			}
 
-			LunaConsole.WriteLine($"Initializing Meta and Buildables ({lunaBridgeDll})");
+			Log.Write($"Initializing Meta and Buildables ({lunaBridgeDll})");
 
-			LunaConsole.OpenScope();
+			Log.OpenScope();
 
 			try
 			{
@@ -112,20 +103,23 @@ namespace Luna.Core
 			}
 			catch (Exception e)
 			{
-				LunaConsole.ErrorLine($"Luna Bridge initialization failed. Reason: {e}");
+				Log.Error($"Luna Bridge initialization failed. Reason: {e}");
 
-				LunaConsole.CloseScope();
+				Log.CloseScope();
 				return;
 			}
 
-			LunaConsole.CloseScope();
+			Log.CloseScope();
 		}
 
-		private static void InitializeTargets()
+		/// <summary>
+		/// Initializes all targets.
+		/// </summary>
+		public static void InitializeTargets()
 		{
-			LunaConsole.WriteLine($"Initializing Targets");
+			Log.Write($"Initializing Targets");
 
-			LunaConsole.OpenScope();
+			Log.OpenScope();
 
 			DirectoryInfo targetsDir = new("./Targets");
 
@@ -149,26 +143,29 @@ namespace Luna.Core
 					}
 					catch (Exception)
 					{
-						LunaConsole.ErrorLine($"Unable to handle {file.FullName}");
+						Log.Error($"Unable to handle {file.FullName}");
 					}
 				}
 			}
 
-			LunaConsole.CloseScope();
+			Log.CloseScope();
 		}
 
-		private static void InitializeCoreServices()
+		/// <summary>
+		/// Initializes all core services.
+		/// </summary>
+		public static void InitializeCoreServices()
 		{
-			LunaConsole.WriteLine($"Initializing Core Services");
+			Log.Write($"Initializing Core Services");
 
-			LunaConsole.OpenScope();
+			Log.OpenScope();
 
 			try
 			{
 				Assembly coreAssembly = Assembly.GetAssembly(typeof(Kickstart));
 				if (coreAssembly == null)
 				{
-					LunaConsole.ErrorLine("Core Services not found.");
+					Log.Error("Core Services not found.");
 				}
 
 				foreach (Type type in coreAssembly.GetTypes())
@@ -183,13 +180,13 @@ namespace Luna.Core
 			}
 			catch (Exception e)
 			{
-				LunaConsole.ErrorLine($"Luna Bridge initialization failed. Reason: {e}");
+				Log.Error($"Luna Bridge initialization failed. Reason: {e}");
 
-				LunaConsole.CloseScope();
+				Log.CloseScope();
 				return;
 			}
 
-			LunaConsole.CloseScope();
+			Log.CloseScope();
 		}
 	}
 }

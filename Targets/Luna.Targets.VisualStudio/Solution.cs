@@ -17,6 +17,11 @@ namespace Luna.Targets.VisualStudio
 
 		public bool WriteFile()
 		{
+			foreach (var project in _projects)
+			{
+				project.WriteFile();
+			}
+
 			Directory.CreateDirectory(Path.GetDirectoryName(SolutionPath));
 			File.WriteAllText(SolutionPath, "");
 			return true;

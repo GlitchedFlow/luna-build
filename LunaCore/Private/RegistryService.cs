@@ -15,7 +15,10 @@ namespace Luna.Core
 
 		#region Properties
 
-		internal static RegistryService Instance { get => _instance; }
+		/// <summary>
+		/// Gets the singleton instances of the registry service.
+		/// </summary>
+		internal static RegistryService Instance => _instance;
 
 		#endregion Properties
 
@@ -27,6 +30,12 @@ namespace Luna.Core
 
 		#endregion Constructor
 
+		/// <summary>
+		/// Registers a new build service.
+		/// </summary>
+		/// <typeparam name="T">Type of the build service.</typeparam>
+		/// <param name="buildService">The instance of the build service.</param>
+		/// <returns>True if successful, otherwise false.</returns>
 		public bool RegisterBuildService<T>(T buildService) where T : IBuild
 		{
 			if (buildService != null)
@@ -35,12 +44,12 @@ namespace Luna.Core
 
 				if (GetBuildService(type.GUID) != null)
 				{
-					LunaConsole.WarningLine($"Build service {type.FullName} was already registered.");
+					Log.Warning($"Build service {type.FullName} was already registered.");
 					return false;
 				}
 
 				_buildServiceByGuid.Add(type.GUID, buildService);
-				LunaConsole.InfoLine($"Added Build Service: {type.FullName} with GUID: {type.GUID}");
+				Log.Info($"Added Build Service: {type.FullName} with GUID: {type.GUID}");
 
 				return true;
 			}
@@ -48,12 +57,22 @@ namespace Luna.Core
 			return false;
 		}
 
+		/// <summary>
+		/// Gets a build service based on the given type.
+		/// </summary>
+		/// <typeparam name="T">Type of the build service.</typeparam>
+		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public T? GetBuildService<T>() where T : IBuild
 		{
 			System.Type buildType = typeof(T);
 			return (T?)GetBuildService(buildType.GUID);
 		}
 
+		/// <summary>
+		/// Gets a build service based on the given guid.
+		/// </summary>
+		/// <param name="guid">The guid of the build service.</param>
+		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public IBuild? GetBuildService(Guid guid)
 		{
 			if (_buildServiceByGuid.ContainsKey(guid))
@@ -64,16 +83,25 @@ namespace Luna.Core
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the count of all registered build services.
+		/// </summary>
+		/// <returns>Count of build services.</returns>
 		public int GetBuildServiceCount()
 		{
 			return _buildServiceByGuid.Count;
 		}
 
+		/// <summary>
+		/// Gets the build service at the given index.
+		/// </summary>
+		/// <param name="index">Index of the build service.</param>
+		/// <returns>Valid instance if in range, otherwise Null.</returns>
 		public IBuild? GetBuildServiceAt(int index)
 		{
 			if (index >= GetBuildServiceCount())
 			{
-				LunaConsole.ErrorLine($"{index} is out of range for registered build services.");
+				Log.Error($"{index} is out of range for registered build services.");
 				return null;
 			}
 
@@ -90,6 +118,12 @@ namespace Luna.Core
 			return null;
 		}
 
+		/// <summary>
+		/// Registers a new meta service.
+		/// </summary>
+		/// <typeparam name="T">Type of the meta service.</typeparam>
+		/// <param name="metaService">Instance of the meta service.</param>
+		/// <returns>True if successful, otherwise false.</returns>
 		public bool RegisterMetaService<T>(T metaService) where T : IMeta
 		{
 			if (metaService != null)
@@ -98,12 +132,12 @@ namespace Luna.Core
 
 				if (GetMetaService(type.GUID) != null)
 				{
-					LunaConsole.WarningLine($"Meta service {type.FullName} was already registered.");
+					Log.Warning($"Meta service {type.FullName} was already registered.");
 					return false;
 				}
 
 				_metaServiceByGuid.Add(type.GUID, metaService);
-				LunaConsole.InfoLine($"Added Meta Service: {type.FullName} with GUID: {type.GUID}");
+				Log.Info($"Added Meta Service: {type.FullName} with GUID: {type.GUID}");
 
 				return true;
 			}
@@ -111,12 +145,22 @@ namespace Luna.Core
 			return false;
 		}
 
+		/// <summary>
+		/// Gets a meta service based on the given type.
+		/// </summary>
+		/// <typeparam name="T">Type of the meta service.</typeparam>
+		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public T? GetMetaService<T>() where T : IMeta
 		{
 			System.Type metaType = typeof(T);
 			return (T?)GetMetaService(metaType.GUID);
 		}
 
+		/// <summary>
+		/// Gets a meta service based on the given guid.
+		/// </summary>
+		/// <param name="guid">Guid of the meta service.</param>
+		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public IMeta? GetMetaService(Guid guid)
 		{
 			if (!_metaServiceByGuid.ContainsKey(guid))
@@ -127,6 +171,12 @@ namespace Luna.Core
 			return _metaServiceByGuid[guid];
 		}
 
+		/// <summary>
+		/// Registers a target.
+		/// </summary>
+		/// <typeparam name="T">Type of the target.</typeparam>
+		/// <param name="target">Instance of the target.</param>
+		/// <returns>True if successful, otherwise false.</returns>
 		public bool RegisterTarget<T>(T target) where T : ITarget
 		{
 			if (target != null)
@@ -135,12 +185,12 @@ namespace Luna.Core
 
 				if (GetTarget(type.GUID) != null)
 				{
-					LunaConsole.WarningLine($"Target {type.FullName} was already registered.");
+					Log.Warning($"Target {type.FullName} was already registered.");
 					return false;
 				}
 
 				_targetByGuid.Add(type.GUID, target);
-				LunaConsole.InfoLine($"Added Target: {target.Name} [{type.FullName}] with GUID: {type.GUID}");
+				Log.Info($"Added Target: {target.Name} [{type.FullName}] with GUID: {type.GUID}");
 
 				return true;
 			}
@@ -148,12 +198,22 @@ namespace Luna.Core
 			return false;
 		}
 
+		/// <summary>
+		/// Gets a target based on the given type.
+		/// </summary>
+		/// <typeparam name="T">Type of the target.</typeparam>
+		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public T? GetTarget<T>() where T : ITarget
 		{
 			System.Type targetType = typeof(T);
 			return (T?)GetTarget(targetType.GUID);
 		}
 
+		/// <summary>
+		/// Gets a target based on the given guid.
+		/// </summary>
+		/// <param name="guid">The guid of the target.</param>
+		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public ITarget? GetTarget(Guid guid)
 		{
 			if (!_targetByGuid.ContainsKey(guid))
@@ -164,16 +224,25 @@ namespace Luna.Core
 			return _targetByGuid[guid];
 		}
 
+		/// <summary>
+		/// Gets the count of all available targets.
+		/// </summary>
+		/// <returns>Count of all targets.</returns>
 		public int GetTargetCount()
 		{
 			return _targetByGuid.Count;
 		}
 
+		/// <summary>
+		/// Gets the target at the given index.
+		/// </summary>
+		/// <param name="index">Index of the target.</param>
+		/// <returns>Valid target if index is in range, otherwise Null.</returns>
 		public ITarget? GetTargetAt(int index)
 		{
 			if (index >= GetTargetCount())
 			{
-				LunaConsole.ErrorLine($"{index} is out of range for registered targets.");
+				Log.Error($"{index} is out of range for registered targets.");
 				return null;
 			}
 

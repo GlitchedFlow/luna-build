@@ -5,6 +5,9 @@ namespace Luna.Core
 	/// </summary>
 	public class ArgumentParser
 	{
+		/// <summary>
+		/// Gets the singleton instance.
+		/// </summary>
 		public static ArgumentParser Instance { get; private set; } = new();
 
 		/// <summary>
@@ -24,7 +27,7 @@ namespace Luna.Core
 		/// <returns>Returns true if parsing was successful.</returns>
 		public bool Parse(string[] args)
 		{
-			LunaConsole.WriteLine("Parsing Arguments");
+			Log.Write("Parsing Arguments");
 
 			List<string> listedArgs = new(args);
 
@@ -35,20 +38,20 @@ namespace Luna.Core
 				return false;
 			}
 
-			LunaConsole.OpenScope();
+			Log.OpenScope();
 
 			if (listedArgs.Contains("-nocode"))
 			{
 				if (listedArgs.Count > 1)
 				{
-					LunaConsole.WarningLine("No other argument besides -nocode is allowed.");
+					Log.Warning("No other argument besides -nocode is allowed.");
 				}
 
-				LunaConsole.WriteLine("Flag -nocode enabled. Skipping LunaBridge compile step.");
+				Log.Write("Flag -nocode enabled. Skipping LunaBridge compile step.");
 
 				NoCompile = true;
 
-				LunaConsole.CloseScope();
+				Log.CloseScope();
 				return true;
 			}
 			if (listedArgs.Contains("-config"))
@@ -56,31 +59,31 @@ namespace Luna.Core
 				int index = listedArgs.IndexOf("-config");
 				if (index + 1 > listedArgs.Count - 1)
 				{
-					LunaConsole.ErrorLine("'-config' parameter is missing its value.");
+					Log.Error("'-config' parameter is missing its value.");
 
-					LunaConsole.CloseScope();
+					Log.CloseScope();
 					return false;
 				}
 
 				ConfigPath = listedArgs[index + 1];
 				if (!Path.Exists(ConfigPath))
 				{
-					LunaConsole.ErrorLine($"{ConfigPath} is not a valid path for '-config' parameter");
+					Log.Error($"{ConfigPath} is not a valid path for '-config' parameter");
 
-					LunaConsole.CloseScope();
+					Log.CloseScope();
 					return false;
 				}
 			}
 			if (listedArgs.Contains("--help"))
 			{
-				LunaConsole.CloseScope();
+				Log.CloseScope();
 
 				Help();
 
 				return false;
 			}
 
-			LunaConsole.CloseScope();
+			Log.CloseScope();
 			return true;
 		}
 
@@ -89,11 +92,11 @@ namespace Luna.Core
 		/// </summary>
 		public void Help()
 		{
-			LunaConsole.WriteLine("Usage:");
-			LunaConsole.WriteLine("\tLunaCLI.exe -code $PATH_TO_CODE$");
-			LunaConsole.WriteLine("Help:");
-			LunaConsole.WriteLine("\tLunaCLI.exe --help");
-			LunaConsole.WriteLine("\t\tPrints help information for the Luna CLI.");
+			Log.Write("Usage:");
+			Log.Write("\tLunaCLI.exe -config $PATH_TO_CONFIG$");
+			Log.Write("Help:");
+			Log.Write("\tLunaCLI.exe --help");
+			Log.Write("\t\tPrints help information for the Luna CLI.");
 		}
 	}
 }

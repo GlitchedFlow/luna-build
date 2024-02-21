@@ -2,7 +2,10 @@
 
 namespace Luna.Meta.Cpp.Projects
 {
-	public class CCppProject : IMeta
+	/// <summary>
+	/// Meta service that can generate projects.
+	/// </summary>
+	public class GeneratorService : IMeta
 	{
 		public void Register()
 		{
