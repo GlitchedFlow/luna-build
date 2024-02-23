@@ -16,7 +16,7 @@ namespace Luna.Core
 		/// <summary>
 		/// Gets or sets the path to the core dll for the luna bridge.
 		/// </summary>
-		public string CorePath { get; set; } = typeof(IBuild).Assembly.Location;
+		public string CorePath { get; set; } = $"{AppDomain.CurrentDomain.BaseDirectory}LunaCore.dll";
 
 		/// <summary>
 		/// Gets or sets the path to where the source code (and with that all *.build.cs files) are located.
@@ -32,6 +32,11 @@ namespace Luna.Core
 		/// Gets or sets the path to where the solution should be generated.
 		/// </summary>
 		public string SolutionPath { get; set; } = "";
+
+		/// <summary>
+		/// Gets the workspace path.
+		/// </summary>
+		public string WorkspacePath { get; private set; } = "";
 
 		/// <summary>
 		/// Gets or sets the list of plugins which should be loaded.
@@ -60,6 +65,12 @@ namespace Luna.Core
 				return false;
 			}
 
+			if (!File.Exists(configPath))
+			{
+				Log.Error($"Config file doesn't exist. Path: {configPath}");
+				return false;
+			}
+
 			LunaConfig? config = JsonSerializer.Deserialize(File.ReadAllText(configPath), typeof(LunaConfig), LunaConfigSourceGenerationContext.Default) as LunaConfig;
 			if (config == null)
 			{
@@ -67,7 +78,13 @@ namespace Luna.Core
 				return false;
 			}
 
-			string dirPath = Path.GetDirectoryName(configPath);
+			string? dirPath = Path.GetDirectoryName(configPath);
+			if (dirPath == null)
+			{
+				Log.Error($"{configPath} is not valid directory path.");
+				return false;
+			}
+
 			if (!Path.IsPathFullyQualified(config.CorePath))
 			{
 				config.CorePath = Path.GetFullPath(Path.Combine(dirPath, config.CorePath));
@@ -83,6 +100,14 @@ namespace Luna.Core
 			if (!Path.IsPathFullyQualified(config.SolutionPath))
 			{
 				config.SolutionPath = Path.GetFullPath(Path.Combine(dirPath, config.SolutionPath));
+			}
+			if (!Path.IsPathFullyQualified(config.WorkspacePath))
+			{
+				config.WorkspacePath = Path.GetFullPath(Path.Combine(dirPath, config.WorkspacePath));
+				if (!Path.Exists(config.WorkspacePath))
+				{
+					config.WorkspacePath = dirPath;
+				}
 			}
 
 			Instance = config;

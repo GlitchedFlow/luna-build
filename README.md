@@ -26,14 +26,16 @@ Clone the repository, extract it and compile the LunaCLI project as well as all 
 ## Luna Config
 ```json
 {
-    "SolutionPath": "..\\..\\solution",  <- Path to where the solution should be generated
-    "CodePath": "..\\..\\Code", <- Path to where the code modules are located
-    "MetaPath": "", <- Path to where meta services are located
+    "SolutionPath": "%path_to_solution%",  <- Path to where the solution should be generated
+    "CodePath": "%path_to_code%", <- Path to where the code modules are located which contain *.build.cs files
+    "MetaPath": "%path_to_meta%", <- Path to where the meta sevices are located which contain *.meta.cs files
+    "CorePath": "%path_to_core%", <- Path to where LunaCore.dll is located [OPTIONAL]
+    "WorkspacePath": "%path_to_workspace%", <- Sets the workspace path for luna. Used for plugin and target look ups
     "Plugins": [
-        "Luna.Meta.Cpp.Projects.dll" <- List of plugins that should be loaded from ../LunaCLI/Plugins/
+        "Luna.Meta.Cpp.Projects" <- List of plugins that should be loaded from %path_to_workspace%/Plugins/ or %path_to_luna%/LunaCLI/Plugins/
     ],
     "Targets": [
-        "Luna.Targets.VisualStudio.dll" <- List of targets that should be loaded from ../LunaCLI/Targets/
+        "Luna.Targets.VisualStudio" <- List of targets that should be loaded from %path_to_workspace%/Targets/ or %path_to_luna%/LunaCLI/Targets/
     ]
 }
 ```
@@ -47,7 +49,7 @@ This project is generated and compiled at runtime (unless the `-nocode` flag is 
 
 ## Command Line Arguments
 ```ps
-.\LunaCLI.exe [-nocode] [-config $Path_to_Config$] --help
+.\LunaCLI.exe -config $Path_to_Config$ [-nocode] [--help]
 
 -nocode // Skips compiliation of LunaBridge.dll and takes a currently available version.
 -config // Tells Luna where to find its config file.
@@ -79,9 +81,9 @@ public class BuildableModule : Luna.Core.IBuild
         options?.RegisterOption(Guid.NewGuid(), "New Option", true);
 
         // Can be used to get custom meta services.
-        _commonMeta = Luna.Core.ServiceProvider.RegistryService.GetMetaService<CommonMeta>();
+        _commonMeta = Luna.Core.ServiceProvider.RegistryService.GetMetaService<CommenMeta>();
 
-        _pluginMeta = Luna.Core.ServiceProvider.RegistryService.GetMetaService<CommonMeta>();
+        _pluginMeta = Luna.Core.ServiceProvider.RegistryService.GetMetaService<PluginMeta>();
     }
 
     // Called when the system needs to be reconfigurated. Might be that some options are no longer available
@@ -153,3 +155,23 @@ public class CWindowsTarget : Luna.Core.Target.ITarget
 }
 ```
 Targets are only scanned for `ITarget` based types. There is no technical limitiation though that blocks registration of meta and build services while targets are registered. The prefered way though is to create stand alone target modules and build modules for those cases.
+
+## Debugging Luna Bridge
+Luna creates a standalone project for the LunaBridge that can be used to debug user code without having the complete Luna source code available. It requires a small addition in form of `launchSettings.json`. The project can be found under `%path_to_workspace%/LunaBridge` and to enable debug support `Properties/launchSettings.json` must be created. Working with this approach also always to catch compile issues before luna gets executed.
+### launchSettings.json
+```json
+{
+  "profiles": {
+    "LunaBridge": {
+      "commandName": "Executable",
+      "executablePath": "%path_to_lunacli.exe",
+      "commandLineArgs": "-config %path_to_config%"
+    }
+  }
+}
+```
+### Visual Studio Support
+Out of the box support when LunaBridge.csproj is opened.
+### Visual Studio Code Support
+Requires [C# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+Out of the box support when LunaBridge folder is opened.

@@ -34,8 +34,7 @@ namespace Luna.Targets.VisualStudio
 
 		private readonly List<BaseProject> _projects = [];
 
-		public string SolutionPath => solutionPath;
-
+		public string SolutionPath { get; set; } = solutionPath;
 		public Guid Guid => solutionGuid;
 
 		public bool AddProject(BaseProject project)
@@ -43,6 +42,11 @@ namespace Luna.Targets.VisualStudio
 			_projects.Add(project);
 
 			return true;
+		}
+
+		public void ClearAllProjects()
+		{
+			_projects.Clear();
 		}
 
 		public bool WriteFile()

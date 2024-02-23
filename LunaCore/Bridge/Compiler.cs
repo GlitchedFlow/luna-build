@@ -31,28 +31,41 @@ namespace Luna.Core
 		/// <summary>
 		/// Compiles the Luna Bridge.
 		/// </summary>
-		/// <param name="configPath">Path to the compiler config</param>
-		public static bool Compile(string configPath)
+		public static bool Compile()
 		{
 			Log.Write("Compiling LunaBridge");
 
 			Log.OpenScope();
 
-			if (!File.Exists(configPath))
+			string plugins = "";
+
+			if (LunaConfig.Instance == null)
 			{
-				Log.Error($"Config file not found at {configPath}");
+				Log.Error($"Luna Config was not yet loaded.");
 				return false;
 			}
 
-			string plugins = "";
+			string? applicationDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			if (applicationDir == null)
+			{
+				Log.Error("Application directory is unknown.");
+				return false;
+			}
 
 			foreach (string requestedPlugin in LunaConfig.Instance.Plugins)
 			{
-				string fullPath = Path.Combine([Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Plugins", requestedPlugin]);
+				// Try workspace plugins.
+				string fullPath = Path.Combine([LunaConfig.Instance.WorkspacePath, "Plugins", $"{requestedPlugin}.dll"]);
 				if (!File.Exists(fullPath))
 				{
-					Log.Error($"Plugin {fullPath} not found.");
-					continue;
+					string workspacePath = fullPath;
+					// Try application plugins.
+					fullPath = Path.Combine([applicationDir, "Plugins", $"{requestedPlugin}.dll"]);
+					if (!File.Exists(fullPath))
+					{
+						Log.Error($"Plugin {requestedPlugin} was neither located via \"{fullPath}\" nor \"{workspacePath}\". Skipping. Luna Bridge might not compile.");
+						continue;
+					}
 				}
 
 				plugins += $"\t\t<Reference Include=\"{Path.GetFileNameWithoutExtension(requestedPlugin)}\">\r\n" + $"\t\t\t<HintPath>{fullPath}</HintPath>\r\n" + "\t\t</Reference>\r\n";
@@ -62,14 +75,21 @@ namespace Luna.Core
 
 			foreach (string requestedTarget in LunaConfig.Instance.Targets)
 			{
-				string fullPath = Path.Combine([Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Targets", requestedTarget]);
+				// Try workspace plugins.
+				string fullPath = Path.Combine([LunaConfig.Instance.WorkspacePath, "Targets", $"{requestedTarget}.dll"]);
 				if (!File.Exists(fullPath))
 				{
-					Log.Error($"Target {fullPath} not found.");
-					continue;
+					string workspacePath = fullPath;
+					// Try application plugins.
+					fullPath = Path.Combine([applicationDir, "Targets", $"{requestedTarget}.dll"]);
+					if (!File.Exists(fullPath))
+					{
+						Log.Error($"Target {requestedTarget} was neither located via \"{fullPath}\" nor \"{workspacePath}\". Skipping. Luna Bridge might not compile.");
+						continue;
+					}
 				}
 
-				plugins += $"\t\t<Reference Include=\"{Path.GetFileNameWithoutExtension(requestedTarget)}\">\r\n" + $"\t\t\t<HintPath>{fullPath}</HintPath>\r\n" + "\t\t</Reference>\r\n";
+				targets += $"\t\t<Reference Include=\"{Path.GetFileNameWithoutExtension(requestedTarget)}\">\r\n" + $"\t\t\t<HintPath>{fullPath}</HintPath>\r\n" + "\t\t</Reference>\r\n";
 			}
 
 			string finalProject = _bridgeProject.Replace("%Luna.Core.dll%", LunaConfig.Instance.CorePath)
@@ -78,7 +98,7 @@ namespace Luna.Core
 												.Replace("%Luna.Bridge.Plugins%", plugins)
 												.Replace("%Luna.Bridge.Targets%", targets);
 
-			const string lunaBridgePath = "LunaBridge";
+			string lunaBridgePath = Path.Combine(LunaConfig.Instance.WorkspacePath, "LunaBridge");
 			string projectPath = Path.Combine(lunaBridgePath, "LunaBridge.csproj");
 
 			if (!Directory.Exists(lunaBridgePath))
@@ -101,30 +121,7 @@ namespace Luna.Core
 
 				compiler.WaitForExit();
 
-				foreach (var logLine in compilerLog.Split("\r\n"))
-				{
-					string trimmed = logLine.Trim();
-					if (trimmed.Contains("info"))
-					{
-						Log.Info(trimmed);
-					}
-					else if (trimmed.Contains("warning"))
-					{
-						Log.Warning(trimmed);
-					}
-					else if (trimmed.Contains("error"))
-					{
-						Log.Error(trimmed);
-					}
-					else if (trimmed.Contains("succeed"))
-					{
-						Log.Succes(trimmed);
-					}
-					else
-					{
-						Log.Write(trimmed);
-					}
-				}
+				WriteCompilerLog(compilerLog);
 
 				if (compiler.ExitCode != 0)
 				{
@@ -146,12 +143,44 @@ namespace Luna.Core
 			var buildConfigurationName = assemblyConfigurationAttribute?.Configuration;
 
 			string lunaBridgeCompiledPath = Path.Combine(lunaBridgePath, $"bin\\{buildConfigurationName}\\net8.0\\LunaBridge.dll");
-			string lunaBridgeTargetPath = Path.Combine("", "LunaBridge.dll");
+			string lunaBridgeTargetPath = Path.Combine(LunaConfig.Instance.WorkspacePath, "LunaBridge.dll");
 
 			File.Copy(lunaBridgeCompiledPath, lunaBridgeTargetPath, true);
 
 			Log.CloseScope();
 			return true;
+		}
+
+		/// <summary>
+		/// Parses the log from the compiler.
+		/// </summary>
+		/// <param name="compilerLog">Output from the compiler.</param>
+		private static void WriteCompilerLog(string compilerLog)
+		{
+			foreach (var logLine in compilerLog.Split("\r\n"))
+			{
+				string trimmed = logLine.Trim();
+				if (trimmed.Contains("info"))
+				{
+					Log.Info(trimmed);
+				}
+				else if (trimmed.Contains("warning"))
+				{
+					Log.Warning(trimmed);
+				}
+				else if (trimmed.Contains("error"))
+				{
+					Log.Error(trimmed);
+				}
+				else if (trimmed.Contains("succeed"))
+				{
+					Log.Succes(trimmed);
+				}
+				else
+				{
+					Log.Write(trimmed);
+				}
+			}
 		}
 	}
 }

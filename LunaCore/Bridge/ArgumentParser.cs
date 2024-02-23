@@ -42,17 +42,9 @@ namespace Luna.Core
 
 			if (listedArgs.Contains("-nocode"))
 			{
-				if (listedArgs.Count > 1)
-				{
-					Log.Warning("No other argument besides -nocode is allowed.");
-				}
-
 				Log.Write("Flag -nocode enabled. Skipping LunaBridge compile step.");
 
 				NoCompile = true;
-
-				Log.CloseScope();
-				return true;
 			}
 			if (listedArgs.Contains("-config"))
 			{

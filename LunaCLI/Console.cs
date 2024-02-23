@@ -23,18 +23,21 @@ namespace Luna.CLI
 
 			if (!ArgumentParser.Instance.Parse(args))
 			{
+				System.Console.ReadKey();
 				return -1;
 			}
 
 			if (!LunaConfig.Load(ArgumentParser.Instance.ConfigPath))
 			{
+				System.Console.ReadKey();
 				return -1;
 			}
 
 			if (!ArgumentParser.Instance.NoCompile)
 			{
-				if (!Compiler.Compile(ArgumentParser.Instance.ConfigPath))
+				if (!Compiler.Compile())
 				{
+					System.Console.ReadKey();
 					return -1;
 				}
 			}
@@ -50,6 +53,7 @@ namespace Luna.CLI
 			if (generatorService == null)
 			{
 				log?.LogError($"Generator Service is unavailable.");
+				System.Console.ReadKey();
 				return -1;
 			}
 
@@ -57,6 +61,7 @@ namespace Luna.CLI
 			if (targetCount <= 0)
 			{
 				log?.LogError($"No targets available.");
+				System.Console.ReadKey();
 				return -1;
 			}
 
@@ -99,6 +104,8 @@ namespace Luna.CLI
 			if (wasGenerated != null && wasGenerated == false)
 			{
 				log?.LogError($"Solution was not generated.");
+				System.Console.ReadKey();
+				return -1;
 			}
 
 			return 0;
