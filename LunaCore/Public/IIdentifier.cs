@@ -8,6 +8,6 @@
 		/// <summary>
 		/// Gets the guid of this object.
 		/// </summary>
-		public Guid Guid { get; }
+		Guid Guid { get; }
 	}
 }

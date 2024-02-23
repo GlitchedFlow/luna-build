@@ -8,6 +8,6 @@ namespace Luna.Core
 		/// <summary>
 		/// Registers the meta service. Called by system.
 		/// </summary>
-		public void Register();
+		void Register();
 	}
 }

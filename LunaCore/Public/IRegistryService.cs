@@ -101,10 +101,92 @@ namespace Luna.Core
 	}
 
 	/// <summary>
-	/// Helper class to provide access to the IRegistryService from anywhere.
+	/// Helper class to provide access to core services from anywhere.
 	/// </summary>
 	public static class ServiceProvider
 	{
-		public static IRegistryService RegistryService { get => Core.RegistryService.Instance; }
+		private static IConfiguratorService? _configuratorService = null;
+		private static IGeneratorService? _generatorService = null;
+		private static ILogService? _logService = null;
+		private static IOptionService? _optionService = null;
+		private static IPlatformService? _platformService = null;
+		private static IProfileService? _profileService = null;
+
+		/// <summary>
+		/// Gets the registery service.
+		/// </summary>
+		public static IRegistryService RegistryService => Core.RegistryService.Instance;
+
+		/// <summary>
+		/// Gets the configurator service.
+		/// </summary>
+		public static IConfiguratorService? ConfiguratorService
+		{
+			get
+			{
+				_configuratorService ??= RegistryService.GetMetaService<IConfiguratorService>();
+				return _configuratorService;
+			}
+		}
+
+		/// <summary>
+		/// Gets the generator service.
+		/// </summary>
+		public static IGeneratorService? GeneratorService
+		{
+			get
+			{
+				_generatorService ??= RegistryService.GetMetaService<IGeneratorService>();
+				return _generatorService;
+			}
+		}
+
+		/// <summary>
+		/// Gets the log service.
+		/// </summary>
+		public static ILogService? LogService
+		{
+			get
+			{
+				_logService ??= RegistryService.GetMetaService<ILogService>();
+				return _logService;
+			}
+		}
+
+		/// <summary>
+		/// Gets the option service.
+		/// </summary>
+		public static IOptionService? OptionService
+		{
+			get
+			{
+				_optionService ??= RegistryService.GetMetaService<IOptionService>();
+				return _optionService;
+			}
+		}
+
+		/// <summary>
+		/// Gets the platform service.
+		/// </summary>
+		public static IPlatformService? PlatformService
+		{
+			get
+			{
+				_platformService ??= RegistryService.GetMetaService<IPlatformService>();
+				return _platformService;
+			}
+		}
+
+		/// <summary>
+		/// Gets the profile service.
+		/// </summary>
+		public static IProfileService? ProfileService
+		{
+			get
+			{
+				_profileService ??= RegistryService.GetMetaService<IProfileService>();
+				return _profileService;
+			}
+		}
 	}
 }

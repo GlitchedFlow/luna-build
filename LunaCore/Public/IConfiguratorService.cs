@@ -8,6 +8,6 @@
 		/// <summary>
 		/// Configurate all build services.
 		/// </summary>
-		public void Configurate();
+		void Configurate();
 	}
 }

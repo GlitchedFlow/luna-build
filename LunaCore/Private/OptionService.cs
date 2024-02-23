@@ -127,7 +127,7 @@ namespace Luna.Core
 
 			m_optionByGuid[guid] = option;
 
-			Log.Write($"Added Option: {option.Name}: {(option.IsEnabled ? "ON" : "OFF")}");
+			Log.Write($"{option.Name}: {(option.IsEnabled ? "ON" : "OFF")}");
 
 			return option;
 		}

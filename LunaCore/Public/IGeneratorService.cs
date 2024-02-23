@@ -10,12 +10,12 @@ namespace Luna.Core
 		/// <summary>
 		/// Gets or sets the active target.
 		/// </summary>
-		public ITarget? ActiveTarget { get; set; }
+		ITarget? ActiveTarget { get; set; }
 
 		/// <summary>
 		/// Triggers the solution generation.
 		/// </summary>
 		/// <returns>True if successful, otherwise false.</returns>
-		public bool Generate();
+		bool Generate();
 	}
 }

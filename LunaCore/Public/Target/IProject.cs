@@ -3,12 +3,12 @@
 	/// <summary>
 	/// Generic interface that describes a project.
 	/// </summary>
-	public interface IProject
+	public interface IProject : IIdentifier
 	{
 		/// <summary>
 		/// Writes the project file.
 		/// </summary>
 		/// <returns>True if successful, otherwise false.</returns>
-		public bool WriteFile();
+		bool WriteFile();
 	}
 }

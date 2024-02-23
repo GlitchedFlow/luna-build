@@ -19,7 +19,7 @@ namespace Luna.CLI
 		{
 			Kickstart.InitializeCoreServices();
 
-			ILogService? log = ServiceProvider.RegistryService.GetMetaService<ILogService>();
+			ILogService? log = ServiceProvider.LogService;
 
 			if (!ArgumentParser.Instance.Parse(args))
 			{
@@ -43,10 +43,10 @@ namespace Luna.CLI
 			Kickstart.InitializePlugins();
 			Kickstart.InitializeBridge();
 
-			IConfiguratorService? configuratorService = ServiceProvider.RegistryService.GetMetaService<IConfiguratorService>();
+			IConfiguratorService? configuratorService = ServiceProvider.ConfiguratorService;
 			configuratorService?.Configurate();
 
-			IGeneratorService? generatorService = ServiceProvider.RegistryService.GetMetaService<IGeneratorService>();
+			IGeneratorService? generatorService = ServiceProvider.GeneratorService;
 			if (generatorService == null)
 			{
 				log?.LogError($"Generator Service is unavailable.");

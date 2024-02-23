@@ -31,40 +31,40 @@
 		/// <param name="content">Content of the message.</param>
 		/// <param name="foreGround">Foreground color for console.</param>
 		/// <param name="backGround">Background color for console.</param>
-		public void Log(string content, ConsoleColor foreGround = ConsoleColor.White, ConsoleColor backGround = ConsoleColor.Black);
+		void Log(string content, ConsoleColor foreGround = ConsoleColor.White, ConsoleColor backGround = ConsoleColor.Black);
 
 		/// <summary>
 		/// Logs an info message.
 		/// </summary>
 		/// <param name="content">Content of the info.</param>
-		public void LogInfo(string content);
+		void LogInfo(string content);
 
 		/// <summary>
 		/// Logs a warning message.
 		/// </summary>
 		/// <param name="content">Content of the warning.</param>
-		public void LogWarning(string content);
+		void LogWarning(string content);
 
 		/// <summary>
 		/// Logs an error message.
 		/// </summary>
 		/// <param name="content">Content of the error.</param>
-		public void LogError(string content);
+		void LogError(string content);
 
 		/// <summary>
 		/// Logs a success message.
 		/// </summary>
 		/// <param name="content">Content of the success.</param>
-		public void LogSuccess(string content);
+		void LogSuccess(string content);
 
 		/// <summary>
 		/// Opens a new scope.
 		/// </summary>
-		public void OpenScope();
+		void OpenScope();
 
 		/// <summary>
 		/// Closes the current scope.
 		/// </summary>
-		public void CloseScope();
+		void CloseScope();
 	}
 }

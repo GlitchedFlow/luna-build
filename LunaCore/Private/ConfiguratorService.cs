@@ -10,7 +10,7 @@
 		/// </summary>
 		public void Configurate()
 		{
-			OptionService? optionService = (OptionService?)RegistryService.Instance.GetMetaService<IOptionService>();
+			OptionService? optionService = (OptionService?)ServiceProvider.OptionService;
 			if (optionService == null)
 			{
 				Log.Error($"Option Service was not registered.");
