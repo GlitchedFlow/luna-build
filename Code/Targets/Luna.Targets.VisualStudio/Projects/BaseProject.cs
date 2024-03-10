@@ -96,10 +96,10 @@ namespace Luna.Targets.VisualStudio.Projects
 		/// </summary>
 		/// <param name="currentEntry">Current element of the project.</param>
 		/// <param name="fileContent">String buffer</param>
-		/// <param name="indetation">Indentation for the current element.</param>
-		public static void WriteTreeToBuffer(ProjectEntry currentEntry, ref string fileContent, string indetation = "")
+		/// <param name="indentation">Indentation for the current element.</param>
+		public static void WriteTreeToBuffer(ProjectEntry currentEntry, ref string fileContent, string indentation = "")
 		{
-			fileContent += $"{indetation}<{currentEntry.Name}";
+			fileContent += $"{indentation}<{currentEntry.Name}";
 
 			if (currentEntry.Attributes.Count > 0)
 			{
@@ -122,13 +122,13 @@ namespace Luna.Targets.VisualStudio.Projects
 					fileContent += ">\r\n";
 					foreach (ProjectEntry child in currentEntry.Children)
 					{
-						WriteTreeToBuffer(child, ref fileContent, indetation + '\t');
+						WriteTreeToBuffer(child, ref fileContent, indentation + '\t');
 					}
-					fileContent += $"{indetation}</{currentEntry.Name}>\r\n";
+					fileContent += $"{indentation}</{currentEntry.Name}>\r\n";
 				}
 				else
 				{
-					fileContent += "/>";
+					fileContent += "/>\r\n";
 				}
 			}
 		}

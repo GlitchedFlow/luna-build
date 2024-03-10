@@ -456,7 +456,6 @@ $RECYCLE.BIN/
 ##
 ## Luna Specific
 ##
-/LunaCLI/Properties
-/LunaCLI/LunaCLI.args.json
-/LunaUI.Desktop/Properties
-LunaBuild.sln
+/Tools/Luna/Bridge
+/Tools/Luna/Bridge.dll
+/solution

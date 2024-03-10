@@ -1,0 +1,10 @@
+{
+		"SolutionPath": "..\\..\\solution",
+		"CodePath": "..\\..\\Code",
+		"MetaPath": "",
+		"Plugins": [
+		],
+		"Targets": [
+				"VisualStudio"
+		]
+}

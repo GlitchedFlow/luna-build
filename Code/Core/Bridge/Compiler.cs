@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Reflection;
-using System.Text.Json;
 
 namespace Luna.Core
 {
@@ -98,8 +97,8 @@ namespace Luna.Core
 												.Replace("%Luna.Bridge.Plugins%", plugins)
 												.Replace("%Luna.Bridge.Targets%", targets);
 
-			string lunaBridgePath = Path.Combine(LunaConfig.Instance.WorkspacePath, "LunaBridge");
-			string projectPath = Path.Combine(lunaBridgePath, "LunaBridge.csproj");
+			string lunaBridgePath = Path.Combine(LunaConfig.Instance.WorkspacePath, "Bridge");
+			string projectPath = Path.Combine(lunaBridgePath, "Bridge.csproj");
 
 			if (!Directory.Exists(lunaBridgePath))
 			{
@@ -114,7 +113,7 @@ namespace Luna.Core
 				compiler.StartInfo.UseShellExecute = false;
 				compiler.StartInfo.RedirectStandardOutput = true;
 				compiler.StartInfo.FileName = "dotnet";
-				compiler.StartInfo.Arguments = $"build {projectPath}";
+				compiler.StartInfo.Arguments = $"build {projectPath} -c {(LunaConfig.Instance.CompileBridgeInDebug ? "Debug" : "Release")}";
 				compiler.Start();
 
 				string compilerLog = compiler.StandardOutput.ReadToEnd();
@@ -139,11 +138,8 @@ namespace Luna.Core
 				return false;
 			}
 
-			var assemblyConfigurationAttribute = typeof(Compiler).Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>();
-			var buildConfigurationName = assemblyConfigurationAttribute?.Configuration;
-
-			string lunaBridgeCompiledPath = Path.Combine(lunaBridgePath, $"bin\\{buildConfigurationName}\\net8.0\\LunaBridge.dll");
-			string lunaBridgeTargetPath = Path.Combine(LunaConfig.Instance.WorkspacePath, "LunaBridge.dll");
+			string lunaBridgeCompiledPath = Path.Combine(lunaBridgePath, $"bin\\{(LunaConfig.Instance.CompileBridgeInDebug ? "Debug" : "Release")}\\net8.0\\Bridge.dll");
+			string lunaBridgeTargetPath = Path.Combine(LunaConfig.Instance.WorkspacePath, "Bridge.dll");
 
 			File.Copy(lunaBridgeCompiledPath, lunaBridgeTargetPath, true);
 

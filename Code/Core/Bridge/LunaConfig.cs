@@ -16,7 +16,7 @@ namespace Luna.Core
 		/// <summary>
 		/// Gets or sets the path to the core dll for the luna bridge.
 		/// </summary>
-		public string CorePath { get; set; } = $"{AppDomain.CurrentDomain.BaseDirectory}LunaCore.dll";
+		public string CorePath { get; set; } = $"{AppDomain.CurrentDomain.BaseDirectory}Core.dll";
 
 		/// <summary>
 		/// Gets or sets the path to where the source code (and with that all *.build.cs files) are located.
@@ -52,6 +52,11 @@ namespace Luna.Core
 		/// Gets or sets the name of the solution.
 		/// </summary>
 		public string Name { get; set; } = "";
+
+		/// <summary>
+		/// Gets or sets if the luna bridge should be compiled in debug mode. Release mode if false.
+		/// </summary>
+		public bool CompileBridgeInDebug { get; set; } = false;
 
 		/// <summary>
 		/// Loads the config from the provided path.
@@ -111,6 +116,11 @@ namespace Luna.Core
 			}
 
 			Instance = config;
+
+			if (!Directory.Exists(Cache.GetCacheFolder()))
+			{
+				Directory.CreateDirectory(Cache.GetCacheFolder());
+			}
 
 			return true;
 		}

@@ -79,7 +79,7 @@ namespace Luna.Core
 		{
 			Log.Write($"Initializing LunaBridge");
 
-			string lunaBridgeDll = Path.Combine(LunaConfig.Instance.WorkspacePath, "LunaBridge.dll");
+			string lunaBridgeDll = Path.Combine(LunaConfig.Instance.WorkspacePath, "Bridge.dll");
 
 			if (!File.Exists(lunaBridgeDll))
 			{
