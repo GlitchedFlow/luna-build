@@ -13,11 +13,6 @@ namespace Luna.Core
 		void Register();
 
 		/// <summary>
-		/// Configurates the build service.
-		/// </summary>
-		void Configurate();
-
-		/// <summary>
 		/// Generate the project.
 		/// </summary>
 		/// <param name="solution">The solution to which this project will be added.</param>

@@ -21,6 +21,16 @@ namespace Luna.Core
 		public string ConfigPath { get; private set; } = "";
 
 		/// <summary>
+		/// Gets or sets the path to a script file.
+		/// </summary>
+		public string ScriptPath { get; set; } = "";
+
+		/// <summary>
+		/// File extension for luna scripts.
+		/// </summary>
+		public const string ScriptExtension = ".lusc";
+
+		/// <summary>
 		/// Parses given console arguments.
 		/// </summary>
 		/// <param name="args">Console arguments</param>
@@ -38,7 +48,12 @@ namespace Luna.Core
 				return false;
 			}
 
-			Log.OpenScope();
+			using LogScope scope = new();
+
+			if (Path.Exists(listedArgs[0]) && File.Exists(listedArgs[0]) && Path.GetExtension(listedArgs[0]) == ScriptExtension)
+			{
+				ScriptPath = listedArgs[0];
+			}
 
 			if (listedArgs.Contains("-nocode"))
 			{
@@ -53,7 +68,6 @@ namespace Luna.Core
 				{
 					Log.Error("'-config' parameter is missing its value.");
 
-					Log.CloseScope();
 					return false;
 				}
 
@@ -62,14 +76,11 @@ namespace Luna.Core
 				{
 					Log.Error($"{ConfigPath} is not a valid path for '-config' parameter");
 
-					Log.CloseScope();
 					return false;
 				}
 			}
 			if (listedArgs.Contains("--help"))
 			{
-				Log.CloseScope();
-
 				Help();
 
 				return false;

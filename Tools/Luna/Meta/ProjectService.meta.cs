@@ -293,6 +293,12 @@ namespace Luna.BuildScript.Meta
 				}));
 			}
 
+			itemGroup.Children.Add(new("None", "", [], new()
+			{
+				{ "Include", $"{codeLocation}"},
+				{ "Link", $"{Path.GetFileName(codeLocation)}" }
+			}));
+
 			_activeProjectTree.Children.Add(itemGroup);
 
 			return this;

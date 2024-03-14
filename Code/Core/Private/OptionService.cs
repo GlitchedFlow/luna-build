@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Luna.Core
@@ -8,7 +9,9 @@ namespace Luna.Core
 	/// </summary>
 	/// <param name="guid">Guid of the option.</param>
 	/// <param name="name">Name of the option.</param>
-	internal class Option(Guid guid, string name) : Identifier(guid), IOption
+	/// <param name="category">Name of the category.</param>
+	/// <param name="dependsOn">Guid of the option this option depends on.</param>
+	internal class Option(Guid guid, string name, string? category = null, Guid? dependsOn = null) : Identifier(guid), IOption
 	{
 		/// <summary>
 		/// Gets the name of the option.
@@ -21,19 +24,51 @@ namespace Luna.Core
 		public string Description { get; set; } = "";
 
 		/// <summary>
-		/// Gets or sets if the option is enabled.
-		/// </summary>
-		public bool IsEnabled { get; set; }
-
-		/// <summary>
 		/// Gets or sets the category of the option.
 		/// </summary>
-		public string Category { get; set; } = "";
+		public string Category { get; set; } = category;
 
 		/// <summary>
 		/// Gets or sets the option guid which this option depends on.
 		/// </summary>
-		public Guid DependsOn { get; set; } = Guid.Empty;
+		public Guid DependsOn { get; set; } = dependsOn ?? Guid.Empty;
+
+		/// <summary>
+		/// Gets the list of options which depend on this option.
+		/// </summary>
+		internal List<Option> DependencyOf { get; } = [];
+	}
+
+	/// <summary>
+	/// Internal class to represent a flag option.
+	/// </summary>
+	/// <param name="guid">Guid of the option.</param>
+	/// <param name="name">Name of the option.</param>
+	/// <param name="isEnabled">Is this option enabled by default.</param>
+	/// <param name="category">Category of the option.</param>
+	/// <param name="dependsOn">Guid of the option this option depends on.</param>
+	internal class FlagOption(Guid guid, string name, bool isEnabled, string? category = null, Guid? dependsOn = null) : Option(guid, name, category, dependsOn), IFlagOption
+	{
+		/// <summary>
+		/// Gets or sets if the option is enabled.
+		/// </summary>
+		public bool IsEnabled { get; set; } = isEnabled;
+	}
+
+	/// <summary>
+	/// Internal class to represent a value option.
+	/// </summary>
+	/// <param name="guid">Guid of the option.</param>
+	/// <param name="name">Name of the option.</param>
+	/// <param name="value">Value of the option.</param>
+	/// <param name="category">Category of the option.</param>
+	/// <param name="dependsOn">Guid of the option this option depends on.</param>
+	internal class ValueOption(Guid guid, string name, string value, string? category = null, Guid? dependsOn = null) : Option(guid, name, category, dependsOn), IValueOption
+	{
+		/// <summary>
+		/// Gets or sets if the option is enabled.
+		/// </summary>
+		public string Value { get; } = value;
 	}
 
 	/// <summary>
@@ -70,23 +105,14 @@ namespace Luna.Core
 				return null;
 			}
 
-			return value.IsEnabled;
-		}
-
-		/// <summary>
-		/// Checks if an option is enabled.
-		/// </summary>
-		/// <param name="name">The name of the option.</param>
-		/// <returns>Returns true if enabled, otherwise false. Null if option does not exist.</returns>
-		public bool? IsOptionEnabled(string name)
-		{
-			var matchingElements = m_optionByGuid.Where(x => x.Value.Name == name);
-			if (matchingElements.Any())
+			FlagOption? option = (FlagOption?)value;
+			if (option == null)
 			{
-				return matchingElements.First().Value.IsEnabled;
+				// Handle anything else then a flag as true.
+				return true;
 			}
 
-			return null;
+			return option.IsEnabled;
 		}
 
 		/// <summary>
@@ -99,31 +125,23 @@ namespace Luna.Core
 		}
 
 		/// <summary>
-		/// Registers a new option.
+		/// Registers a new flag option.
 		/// </summary>
 		/// <param name="guid">The guid of the option.</param>
 		/// <param name="name">The name of the option.</param>
 		/// <param name="IsEnabled">Is this option enabled?</param>
+		/// <param name="category">Category of the option/</param>
+		/// <param name="dependsOn">The guid of the option this option depends on.</param>
 		/// <returns>The new option. Null if unsuccessful.</returns>
-		public IOption? RegisterOption(Guid guid, string name, bool IsEnabled)
+		public IFlagOption? RegisterFlagOption(Guid guid, string name, bool IsEnabled, string? category = null, Guid? dependsOn = null)
 		{
-			if (m_optionByGuid.TryGetValue(guid, out Option? value))
+			if (m_optionByGuid.TryGetValue(guid, out _))
 			{
 				Log.Error($"An option with guid {guid} is already registered.");
 				return null;
 			}
 
-			var matchingElements = m_optionByGuid.Where(x => x.Value.Name == name);
-			if (matchingElements.Any())
-			{
-				Log.Error($"An option with name {name} is already registered.");
-				return null;
-			}
-
-			Option option = new(guid, name)
-			{
-				IsEnabled = IsEnabled
-			};
+			FlagOption option = new(guid, name, IsEnabled, category, dependsOn);
 
 			m_optionByGuid[guid] = option;
 
@@ -133,13 +151,29 @@ namespace Luna.Core
 		}
 
 		/// <summary>
-		/// Removes an option based on the guid.
+		/// Registers a new value option.
 		/// </summary>
 		/// <param name="guid">The guid of the option.</param>
-		/// <returns>True if removed, otherwise false.</returns>
-		public bool RemoveOption(Guid guid)
+		/// <param name="name">The name of the option.</param>
+		/// <param name="IsEnabled">Is this option enabled?</param>
+		/// <param name="category">Category of the option/</param>
+		/// <param name="dependsOn">The guid of the option this option depends on.</param>
+		/// <returns>The new option. Null if unsuccessful.</returns>
+		public IValueOption? RegisterValueOption(Guid guid, string name, string value, string? category = null, Guid? dependsOn = null)
 		{
-			return m_optionByGuid.Remove(guid);
+			if (m_optionByGuid.TryGetValue(guid, out _))
+			{
+				Log.Error($"An option with guid {guid} is already registered.");
+				return null;
+			}
+
+			ValueOption option = new(guid, name, value, category, dependsOn);
+
+			m_optionByGuid[guid] = option;
+
+			Log.Write($"{option.Name}: {option.Value}");
+
+			return option;
 		}
 
 		/// <summary>
@@ -153,7 +187,13 @@ namespace Luna.Core
 			Dictionary<Guid, bool> options = [];
 			foreach (var opt in m_optionByGuid)
 			{
-				options.Add(opt.Key, opt.Value.IsEnabled);
+				FlagOption? option = (FlagOption?)opt.Value;
+				if (option == null)
+				{
+					continue;
+				}
+
+				options.Add(opt.Key, option.IsEnabled);
 			}
 
 			string optionsJSON = JsonSerializer.Serialize(options, typeof(Dictionary<Guid, bool>), OptionDictSourceGenerationContext.Default);
@@ -192,7 +232,13 @@ namespace Luna.Core
 				{
 					if (m_optionByGuid.TryGetValue(loadedOption.Key, out Option? value))
 					{
-						value.IsEnabled = loadedOption.Value;
+						FlagOption? option = (FlagOption?)value;
+						if (option == null)
+						{
+							continue;
+						}
+
+						option.IsEnabled = loadedOption.Value;
 					}
 				}
 			}
@@ -205,12 +251,43 @@ namespace Luna.Core
 			return true;
 		}
 
-		/// <summary>
-		/// Clears all options.
-		/// </summary>
-		internal void Clear()
+		public void BuildDependencyTree()
 		{
-			m_optionByGuid.Clear();
+			foreach (Option option in m_optionByGuid.Values)
+			{
+				if (option.DependsOn != Guid.Empty)
+				{
+					if (!m_optionByGuid.TryGetValue(option.DependsOn, out Option? value))
+					{
+						LogService.Instance.LogError($"No option with the guid: '{option.DependsOn}' was registered.");
+						continue;
+					}
+
+					value.DependencyOf.Add(option);
+				}
+			}
+		}
+
+		public void VisitOptions(Func<IOption, bool> visitor)
+		{
+			foreach (Option option in m_optionByGuid.Values)
+			{
+				if (!visitor(option))
+				{
+					return;
+				}
+			}
+		}
+
+		public void VisitGroupedOptions(Func<IGrouping<string, IOption>, bool> visitor)
+		{
+			foreach (var group in m_optionByGuid.Values.GroupBy(x => x.Category))
+			{
+				if (!visitor(group))
+				{
+					return;
+				}
+			}
 		}
 	}
 }

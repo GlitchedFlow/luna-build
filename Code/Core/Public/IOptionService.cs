@@ -16,11 +16,6 @@
 		string Description { get; set; }
 
 		/// <summary>
-		/// Gets or sets if this option is enabled.
-		/// </summary>
-		bool IsEnabled { get; set; }
-
-		/// <summary>
 		/// Gets or sets the category of this option.
 		/// </summary>
 		string Category { get; set; }
@@ -32,18 +27,53 @@
 	}
 
 	/// <summary>
+	/// Generic interface that describes a value option to show readonly const values.
+	/// </summary>
+	public interface IValueOption : IOption
+	{
+		/// <summary>
+		/// Gets the value of an option.
+		/// </summary>
+		string Value { get; }
+	}
+
+	/// <summary>
+	/// Generic interface that describes a flag option to enable/disable section of the solution.
+	/// </summary>
+	public interface IFlagOption : IOption
+	{
+		/// <summary>
+		/// Gets or sets if this option is enabled.
+		/// </summary>
+		bool IsEnabled { get; set; }
+	}
+
+	/// <summary>
 	/// Core service interface that is used to handle options for the generation.
 	/// </summary>
 	public interface IOptionService : IMeta
 	{
 		/// <summary>
-		/// Registers a new option.
+		/// Registers a new flag option.
 		/// </summary>
 		/// <param name="guid">The guid of the option.</param>
 		/// <param name="name">The name of the option.</param>
 		/// <param name="IsEnabled">Is this option enabled?</param>
+		/// <param name="category">Category of the option.</param>
+		/// <param name="dependsOn">The guid of the option this option depends on.</param>
 		/// <returns>The new option. Null if unsuccessful.</returns>
-		IOption? RegisterOption(Guid guid, string name, bool IsEnabled);
+		IFlagOption? RegisterFlagOption(Guid guid, string name, bool IsEnabled, string? category = null, Guid? dependsOn = null);
+
+		/// <summary>
+		/// Registers a new option.
+		/// </summary>
+		/// <param name="guid">The guid of the option.</param>
+		/// <param name="name">The name of the option.</param>
+		/// <param name="value">Const value of something.</param>
+		/// <param name="category">Category of the option.</param>
+		/// <param name="dependsOn">The guid of the option this option depends on.</param>
+		/// <returns>The new option. Null if unsuccessful.</returns>
+		IValueOption? RegisterValueOption(Guid guid, string name, string value, string? category = null, Guid? dependsOn = null);
 
 		/// <summary>
 		/// Checks if an option is enabled.
@@ -53,22 +83,20 @@
 		bool? IsOptionEnabled(Guid guid);
 
 		/// <summary>
-		/// Checks if an option is enabled.
+		/// Builds the dependency tree between the options.
 		/// </summary>
-		/// <param name="name">The name of the option.</param>
-		/// <returns>Returns true if enabled, otherwise false. Null if option does not exist.</returns>
-		bool? IsOptionEnabled(string name);
+		void BuildDependencyTree();
 
 		/// <summary>
-		/// Saves the current state of options to file.
+		/// Visit all options.
 		/// </summary>
-		/// <returns>True if successful, otherwise false.</returns>
-		bool SaveToFile();
+		/// <param name="visitor">Visitor function</param>
+		void VisitOptions(Func<IOption, bool> visitor);
 
 		/// <summary>
-		/// Loads options state from file and tries to apply the state of each if available.
+		/// Visit all options grouped by their category.
 		/// </summary>
-		/// <returns>True if successful, otherwise false.</returns>
-		bool LoadFromFile();
+		/// <param name="visitor">Visitor function</param>
+		void VisitGroupedOptions(Func<IGrouping<string, IOption>, bool> visitor);
 	}
 }

@@ -14,13 +14,6 @@ namespace Luna.BuildScript.CLI
 		public const string NAME = "CLI";
 
 		/// <summary>
-		/// Configurates the CLI options.
-		/// </summary>
-		public void Configurate()
-		{
-		}
-
-		/// <summary>
 		/// Generates the project.
 		/// </summary>
 		/// <param name="solution">Solution to which the project should be added.</param>
@@ -40,7 +33,29 @@ namespace Luna.BuildScript.CLI
 				projectService.ConsoleLauncher()
 							.Reference([Core.Builder.NAME])
 							.Files([
-								new("Console.cs", "Console.cs")
+								new("Console.cs", "Console.cs"),
+
+								new("Modules\\BaseCommand.cs", "Modules\\BaseCommand.cs"),
+								new("Modules\\BaseModule.cs", "Modules\\BaseModule.cs"),
+
+								new("Modules\\Core\\CoreModule.cs", "Modules\\Core\\CoreModule.cs"),
+								new("Modules\\Core\\Commands\\ListCommand.cs", "Modules\\Core\\Commands\\ListCommand.cs"),
+								new("Modules\\Core\\Commands\\SwitchCommand.cs", "Modules\\Core\\Commands\\SwitchCommand.cs"),
+
+								new("Modules\\Generator\\GeneratorModule.cs", "Modules\\Generator\\GeneratorModule.cs"),
+								new("Modules\\Generator\\Commands\\GenerateCommand.cs", "Modules\\Generator\\Commands\\GenerateCommand.cs"),
+
+								new("Modules\\Options\\OptionsModule.cs", "Modules\\Options\\OptionsModule.cs"),
+								new("Modules\\Options\\Commands\\ListCommand.cs", "Modules\\Options\\Commands\\ListCommand.cs"),
+								new("Modules\\Options\\Commands\\SetOptionCommand.cs", "Modules\\Options\\Commands\\SetOptionCommand.cs"),
+
+								new("Modules\\Plugins\\PluginsModule.cs", "Modules\\Plugins\\PluginsModule.cs"),
+								new("Modules\\Plugins\\Commands\\ListCommand.cs", "Modules\\Plugins\\Commands\\ListCommand.cs"),
+
+								new("Modules\\Targets\\TargetModule.cs", "Modules\\Targets\\TargetModule.cs"),
+								new("Modules\\Targets\\Commands\\GetActiveCommand.cs", "Modules\\Targets\\Commands\\GetActiveCommand.cs"),
+								new("Modules\\Targets\\Commands\\ListCommand.cs", "Modules\\Targets\\Commands\\ListCommand.cs"),
+								new("Modules\\Targets\\Commands\\SetActiveCommand.cs", "Modules\\Targets\\Commands\\SetActiveCommand.cs")
 							]);
 			}
 

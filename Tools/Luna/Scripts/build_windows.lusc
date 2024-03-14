@@ -1,0 +1,9 @@
+// Active target
+targets.set "Visual Studio 2022 - Windows x64"
+
+// Disable plugins
+options.set plugins."cpp projects" off
+options.set ui off
+
+// Generate solution
+generator.generate

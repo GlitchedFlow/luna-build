@@ -1,4 +1,6 @@
-﻿namespace Luna.Core
+﻿using System;
+
+namespace Luna.Core
 {
 	/// <summary>
 	/// Core service class that is used to handle logging.
@@ -212,6 +214,28 @@
 		/// Closes the current log scope.
 		/// </summary>
 		public static void CloseScope()
+		{
+			LogService.Instance.CloseScope();
+		}
+	}
+
+	/// <summary>
+	/// Utility class to control a log scope via using.
+	/// </summary>
+	public class LogScope : IDisposable
+	{
+		/// <summary>
+		/// Opens the new scope.
+		/// </summary>
+		public LogScope()
+		{
+			LogService.Instance.OpenScope();
+		}
+
+		/// <summary>
+		/// Closes the scope.
+		/// </summary>
+		public void Dispose()
 		{
 			LogService.Instance.CloseScope();
 		}

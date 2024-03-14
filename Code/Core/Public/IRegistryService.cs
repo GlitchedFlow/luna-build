@@ -105,7 +105,6 @@ namespace Luna.Core
 	/// </summary>
 	public static class ServiceProvider
 	{
-		private static IConfiguratorService? _configuratorService = null;
 		private static IGeneratorService? _generatorService = null;
 		private static ILogService? _logService = null;
 		private static IOptionService? _optionService = null;
@@ -116,18 +115,6 @@ namespace Luna.Core
 		/// Gets the registery service.
 		/// </summary>
 		public static IRegistryService RegistryService => Core.RegistryService.Instance;
-
-		/// <summary>
-		/// Gets the configurator service.
-		/// </summary>
-		public static IConfiguratorService? ConfiguratorService
-		{
-			get
-			{
-				_configuratorService ??= RegistryService.GetMetaService<IConfiguratorService>();
-				return _configuratorService;
-			}
-		}
 
 		/// <summary>
 		/// Gets the generator service.

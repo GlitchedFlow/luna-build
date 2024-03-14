@@ -12,13 +12,6 @@ namespace Luna.BuildScript.Targets.VisualStudio
 	public class Builder : IBuild
 	{
 		/// <summary>
-		/// Configurates the options.
-		/// </summary>
-		public void Configurate()
-		{
-		}
-
-		/// <summary>
 		/// Generates the project.
 		/// </summary>
 		/// <param name="solution">Solution to which the project should be added.</param>

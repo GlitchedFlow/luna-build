@@ -13,12 +13,9 @@ namespace Luna.BuildScript.Plugins.CppProject
 	{
 		public const string NAME = "CppProject";
 
-		/// <summary>
-		/// Configurates the options.
-		/// </summary>
-		public void Configurate()
-		{
-		}
+		private IFlagOption? _option = null;
+
+		public static Guid CPP_PROJECT = "{2CDC5CA5-4FF3-4784-B7C6-15FAC58C712E}".AsGuid();
 
 		/// <summary>
 		/// Generates the project.
@@ -27,6 +24,11 @@ namespace Luna.BuildScript.Plugins.CppProject
 		/// <returns>The project</returns>
 		public IProject? Generate(ISolution solution)
 		{
+			if (_option == null || !_option.IsEnabled)
+			{
+				return null;
+			}
+
 			Project project = new(NAME, "LunaPlugins", "{8F44E5DF-9A93-4561-8AE9-C337E69BF3CD}".AsGuid(), (Solution)solution);
 
 			ProjectService? projectService = ServiceProvider.RegistryService.GetMetaService<ProjectService>();
@@ -53,6 +55,8 @@ namespace Luna.BuildScript.Plugins.CppProject
 		public void Register()
 		{
 			ServiceProvider.RegistryService.RegisterBuildService(this);
+
+			_option = ServiceProvider.OptionService?.RegisterFlagOption(CPP_PROJECT, "Cpp Projects", true, "Plugins");
 		}
 	}
 }

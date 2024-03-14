@@ -14,13 +14,6 @@ namespace Luna.BuildScript.Core
 		public const string NAME = "Core";
 
 		/// <summary>
-		/// Configurates the options.
-		/// </summary>
-		public void Configurate()
-		{
-		}
-
-		/// <summary>
 		/// Generates the project.
 		/// </summary>
 		/// <param name="solution">Solution to which the project should be added.</param>
@@ -45,7 +38,6 @@ namespace Luna.BuildScript.Core
 								new("Bridge\\LunaConfig.cs", "Bridge\\LunaConfig.cs"),
 
 								new("Private\\Cache.cs", "Private\\Cache.cs"),
-								new("Private\\ConfiguratorService.cs", "Private\\ConfiguratorService.cs"),
 								new("Private\\GeneratorService.cs", "Private\\GeneratorService.cs"),
 								new("Private\\Identifier.cs", "Private\\Identifier.cs"),
 								new("Private\\LogService.cs", "Private\\LogService.cs"),
@@ -60,7 +52,6 @@ namespace Luna.BuildScript.Core
 
 								new("Public\\GuidExtension.cs", "Public\\GuidExtension.cs"),
 								new("Public\\IBuild.cs", "Public\\IBuild.cs"),
-								new("Public\\IConfiguratorService.cs", "Public\\IConfiguratorService.cs"),
 								new("Public\\IGeneratorService.cs", "Public\\IGeneratorService.cs"),
 								new("Public\\IIdentifier.cs", "Public\\IIdentifier.cs"),
 								new("Public\\ILogService.cs", "Public\\ILogService.cs"),

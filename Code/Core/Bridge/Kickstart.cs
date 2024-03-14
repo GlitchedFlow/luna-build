@@ -56,7 +56,7 @@ namespace Luna.Core
 
 			DirectoryInfo curPluginDir = new(Path.Combine(LunaConfig.Instance.WorkspacePath, _pluginsDir));
 
-			List<string> requestedPlugins = LunaConfig.Instance.Plugins;
+			List<string> requestedPlugins = [.. LunaConfig.Instance.Plugins];
 
 			if (curPluginDir.Exists)
 			{
@@ -145,7 +145,7 @@ namespace Luna.Core
 
 			DirectoryInfo curTargetsDir = new(Path.Combine(LunaConfig.Instance.WorkspacePath, _targetsDir));
 
-			List<string> requestedTargets = LunaConfig.Instance.Targets;
+			List<string> requestedTargets = [.. LunaConfig.Instance.Targets];
 
 			if (curTargetsDir.Exists)
 			{

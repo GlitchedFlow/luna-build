@@ -1,4 +1,5 @@
-﻿using Luna.Core;
+﻿using Luna.CLI.Modules.Core;
+using Luna.Core;
 using Luna.Core.Target;
 using System.Diagnostics.CodeAnalysis;
 
@@ -46,9 +47,6 @@ namespace Luna.CLI
 			Kickstart.InitializePlugins();
 			Kickstart.InitializeBridge();
 
-			IConfiguratorService? configuratorService = ServiceProvider.ConfiguratorService;
-			configuratorService?.Configurate();
-
 			IGeneratorService? generatorService = ServiceProvider.GeneratorService;
 			if (generatorService == null)
 			{
@@ -65,50 +63,146 @@ namespace Luna.CLI
 				return -1;
 			}
 
-			log?.Log($"Please enter the number of the target you want to generate the solution for. Available Targets ({targetCount}):");
-			for (int curIndex = 0; curIndex < targetCount; ++curIndex)
+			BaseModule.InitModules();
+
+			BaseModule.ActiveModule = new Module();
+
+			if (!string.IsNullOrWhiteSpace(ArgumentParser.Instance.ScriptPath))
 			{
-				ITarget? curTarget = ServiceProvider.RegistryService.GetTargetAt(curIndex);
-				if (curTarget != null)
-				{
-					log?.Log($"{curIndex + 1}: {curTarget.Name}");
-				}
+				HandleScript(ArgumentParser.Instance.ScriptPath);
 			}
-
-			bool validSelection = false;
-			while (!validSelection)
+			else
 			{
-				if (int.TryParse(System.Console.ReadLine(), out int inputValue))
+				log?.Log($"Please enter a command that should be executed.");
+				log?.Log($"Enter \"help\" to get help for the current module.");
+				log?.Log($"Enter \"exit\" to exit the current module.");
+
+				while (BaseModule.ActiveModule != null)
 				{
-					if (inputValue > targetCount || inputValue <= 0)
+					System.Console.Write($"[{BaseModule.ActiveModule.Name}] ");
+					string? input = System.Console.ReadLine();
+					if (input == null)
 					{
-						log?.LogError($"{inputValue} is out of range. Please enter a number between 1 and {targetCount}.");
+						BaseModule.ActiveModule.Help();
+						continue;
 					}
-					else
-					{
-						generatorService.ActiveTarget = ServiceProvider.RegistryService.GetTargetAt(inputValue - 1);
-						validSelection = true;
-					}
+
+					Execute(input);
 				}
-				else
-				{
-					log?.LogError($"Invalid selection. Please enter a number between 1 and {targetCount}.");
-				}
-			}
-
-			log?.LogInfo($"Generating solution for: {generatorService?.ActiveTarget?.Name}");
-			log?.LogInfo($"Solution Path: {Path.Combine(Path.GetFullPath(LunaConfig.Instance.SolutionPath), generatorService.ActiveTarget.SolutionFolder)}");
-
-			bool? wasGenerated = generatorService?.Generate();
-
-			if (wasGenerated != null && wasGenerated == false)
-			{
-				log?.LogError($"Solution was not generated.");
-				System.Console.ReadKey();
-				return -1;
 			}
 
 			return 0;
+		}
+
+		/// <summary>
+		/// Executes a luna script.
+		/// </summary>
+		/// <param name="scriptPath">Path to the script file.</param>
+		private static void HandleScript(string scriptPath)
+		{
+			string[] scriptContent = File.ReadAllLines(scriptPath);
+
+			foreach (string line in scriptContent)
+			{
+				if (line.StartsWith("//"))
+				{
+					// Comment
+					continue;
+				}
+
+				if (string.IsNullOrWhiteSpace(line) || string.IsNullOrEmpty(line))
+				{
+					// Empty line
+					continue;
+				}
+
+				if (line.StartsWith("#exec"))
+				{
+					// Execute sub script.
+					string[] splitLine = HandleInput(line);
+					if (splitLine.Length != 2)
+					{
+						ServiceProvider.LogService.LogWarning($"Script Warning - #exec expects a valid path to *.lusc file");
+						continue;
+					}
+
+					string filePath = splitLine[1];
+					if (Path.Exists(filePath) && File.Exists(filePath) && Path.GetExtension(filePath) == ArgumentParser.ScriptExtension)
+					{
+						HandleScript(filePath);
+					}
+				}
+
+				Execute(line);
+			}
+		}
+
+		/// <summary>
+		/// Maps the input to command and args.
+		/// </summary>
+		/// <param name="input">Raw input string</param>
+		/// <returns>split input</returns>
+		private static string[] HandleInput(string input)
+		{
+			List<string> result = [];
+
+			string currentValue = "";
+			bool isInQuotes = false;
+
+			foreach (char c in input)
+			{
+				if (c == '"')
+				{
+					if (isInQuotes)
+					{
+						result.Add(currentValue);
+						currentValue = "";
+						isInQuotes = false;
+					}
+					else
+					{
+						isInQuotes = true;
+					}
+					continue;
+				}
+				else if (c == ' ' && !isInQuotes && !string.IsNullOrWhiteSpace(currentValue))
+				{
+					result.Add(currentValue);
+					currentValue = "";
+					continue;
+				}
+
+				currentValue += c;
+			}
+
+			if (currentValue != "")
+			{
+				result.Add(currentValue);
+			}
+
+			return [.. result];
+		}
+
+		private static void Execute(string input)
+		{
+			if (BaseModule.ActiveModule == null)
+			{
+				return;
+			}
+
+			string[] splitInput = HandleInput(input.Trim());
+			string[] scopeSplit = splitInput[0].Split('.');
+
+			if (scopeSplit.Length > 1)
+			{
+				BaseModule.ActiveModule.HandleCommand(scopeSplit[0], []); // Execute module switch.
+				BaseModule.ActiveModule.HandleCommand(scopeSplit[1], splitInput[1..]); // Actual command.
+				BaseModule.ActiveModule.Exit(); // Execute scope.
+			}
+			else
+			{
+				BaseModule.ActiveModule.HandleCommand(splitInput[0], splitInput[1..]);
+			}
 		}
 	}
 }

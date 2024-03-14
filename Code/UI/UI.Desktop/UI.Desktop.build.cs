@@ -3,6 +3,7 @@ using Luna.Core;
 using Luna.Core.Target;
 using Luna.Targets.VisualStudio;
 using Luna.Targets.VisualStudio.Projects.CSharp;
+using Microsoft.VisualBasic.FileIO;
 
 namespace Luna.BuildScript.UI.Desktop
 {
@@ -12,19 +13,18 @@ namespace Luna.BuildScript.UI.Desktop
 	public class Builder : IBuild
 	{
 		/// <summary>
-		/// Configurates the options.
-		/// </summary>
-		public void Configurate()
-		{
-		}
-
-		/// <summary>
 		/// Generates the project.
 		/// </summary>
 		/// <param name="solution">Solution to which the project should be added.</param>
 		/// <returns>The project</returns>
 		public IProject? Generate(ISolution solution)
 		{
+			bool? isUIEnabled = ServiceProvider.OptionService.IsOptionEnabled(UI.Builder.OPTION_UI);
+			if (!isUIEnabled.HasValue || !isUIEnabled.Value)
+			{
+				return null;
+			}
+
 			Project project = new("UI.Desktop", "Luna\\UI", "5FFF8EE8-E148-461B-B409-A4377824E847".AsGuid(), (Solution)solution);
 
 			ProjectService? projectService = ServiceProvider.RegistryService.GetMetaService<ProjectService>();
