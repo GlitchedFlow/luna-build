@@ -1,10 +1,11 @@
 {
-		"SolutionPath": "..\\..\\solution",
-		"CodePath": "..\\..\\Code",
-		"MetaPath": "",
-		"Plugins": [
-		],
-		"Targets": [
-				"VisualStudio"
-		]
+	"Name": "Luna",
+	"SolutionPath": "..\\..\\solution",
+	"CodePath": "..\\..\\Code",
+	"MetaPath": "",
+	"Plugins": [
+	],
+	"Targets": [
+		"VisualStudio"
+	]
 }

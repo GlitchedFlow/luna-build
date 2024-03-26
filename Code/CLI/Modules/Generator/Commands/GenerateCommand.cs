@@ -2,31 +2,50 @@ using Luna.Core;
 
 namespace Luna.CLI.Modules.Generator
 {
+	/// <summary>
+	/// Generate command for the CLI.
+	/// </summary>
 	public class GenerateCommand : BaseCommand
 	{
+		/// <summary>
+		/// Gets the name of the command.
+		/// </summary>
 		public override string Name => "generate";
 
+		/// <summary>
+		/// Gets the description of the command.
+		/// </summary>
 		public override string Description => "Generates the solution";
 
-		public override void Execute(string[] args)
+		/// <summary>
+		/// Executes the command.
+		/// </summary>
+		/// <param name="args">Arguments for the command.</param>
+		/// <returns>True if successful, otherwise false.</returns>
+		public override bool Execute(string[] args)
 		{
 			ILogService? logSerivce = ServiceProvider.LogService;
 			IGeneratorService? generatorService = ServiceProvider.GeneratorService;
-			if (logSerivce != null && generatorService != null)
+			if (logSerivce == null || generatorService == null)
 			{
-				if (generatorService.ActiveTarget == null)
-				{
-					logSerivce.LogError($"No active target was set.");
-				}
+				return false;
+			}
 
-				if (!generatorService.Generate())
-				{
-					logSerivce.LogError("Solution was not generated.");
-				}
-				else
-				{
-					logSerivce.LogSuccess("Solution was generated.");
-				}
+			if (generatorService.ActiveTarget == null)
+			{
+				logSerivce.LogError($"No active target was set.");
+				return false;
+			}
+
+			if (!generatorService.Generate())
+			{
+				logSerivce.LogError("Solution was not generated.");
+				return false;
+			}
+			else
+			{
+				logSerivce.LogSuccess("Solution was generated.");
+				return true;
 			}
 		}
 	}

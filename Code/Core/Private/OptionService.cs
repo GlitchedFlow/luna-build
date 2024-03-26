@@ -26,7 +26,7 @@ namespace Luna.Core
 		/// <summary>
 		/// Gets or sets the category of the option.
 		/// </summary>
-		public string Category { get; set; } = category;
+		public string Category { get; set; } = category ?? "";
 
 		/// <summary>
 		/// Gets or sets the option guid which this option depends on.
@@ -251,6 +251,9 @@ namespace Luna.Core
 			return true;
 		}
 
+		/// <summary>
+		/// Builds the dependenceny tree for the options.
+		/// </summary>
 		public void BuildDependencyTree()
 		{
 			foreach (Option option in m_optionByGuid.Values)
@@ -268,6 +271,10 @@ namespace Luna.Core
 			}
 		}
 
+		/// <summary>
+		/// Visits all options.
+		/// </summary>
+		/// <param name="visitor">Visitor function.</param>
 		public void VisitOptions(Func<IOption, bool> visitor)
 		{
 			foreach (Option option in m_optionByGuid.Values)
@@ -279,6 +286,10 @@ namespace Luna.Core
 			}
 		}
 
+		/// <summary>
+		/// Visits all options grouped by their category.
+		/// </summary>
+		/// <param name="visitor">Visitor function.</param>
 		public void VisitGroupedOptions(Func<IGrouping<string, IOption>, bool> visitor)
 		{
 			foreach (var group in m_optionByGuid.Values.GroupBy(x => x.Category))
@@ -288,6 +299,15 @@ namespace Luna.Core
 					return;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the current count of all options.
+		/// </summary>
+		/// <returns>Count of all options.</returns>
+		public int GetOptionsCount()
+		{
+			return m_optionByGuid.Count;
 		}
 	}
 }

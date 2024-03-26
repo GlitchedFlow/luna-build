@@ -2,13 +2,27 @@ using Luna.Core;
 
 namespace Luna.CLI.Modules.Core
 {
+	/// <summary>
+	/// List command for the CLI.
+	/// </summary>
 	public class ListCommand : BaseCommand
 	{
+		/// <summary>
+		/// Gets the name of the command.
+		/// </summary>
 		public override string Name => "list";
 
+		/// <summary>
+		/// Gets the description for the command.
+		/// </summary>
 		public override string Description => "List all modules";
 
-		public override void Execute(string[] args)
+		/// <summary>
+		/// Executes the command.
+		/// </summary>
+		/// <param name="args">Arguments for the command.</param>
+		/// <returns>True if successful, otherwise false.</returns>
+		public override bool Execute(string[] args)
 		{
 			ILogService? logSerivce = ServiceProvider.LogService;
 			if (logSerivce != null)
@@ -18,7 +32,11 @@ namespace Luna.CLI.Modules.Core
 				{
 					module.Help();
 				}
+
+				return true;
 			}
+
+			return false;
 		}
 	}
 }

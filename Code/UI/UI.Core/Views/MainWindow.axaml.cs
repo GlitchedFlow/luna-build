@@ -1,11 +1,23 @@
 ﻿using Avalonia.Controls;
 
-namespace LunaUI.Views;
+namespace Luna.UI.Views;
 
+/// <summary>
+/// Main Window class.
+/// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
-    {
-        InitializeComponent();
-    }
+	/// <summary>
+	/// Gets the Main window of the app instance.
+	/// </summary>
+	public static MainWindow? AppWindow { get; private set; } = null;
+
+	/// <summary>
+	/// Instanciates a new instance of the main window.
+	/// </summary>
+	public MainWindow()
+	{
+		InitializeComponent();
+		AppWindow = this;
+	}
 }

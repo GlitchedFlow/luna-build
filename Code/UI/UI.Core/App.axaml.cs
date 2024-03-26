@@ -2,40 +2,54 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Luna.Core;
+using Luna.UI.ViewModels;
+using Luna.UI.Views;
 
-using LunaUI.ViewModels;
-using LunaUI.Views;
+namespace Luna.UI;
 
-namespace LunaUI;
-
+/// <summary>
+/// Core app class.
+/// </summary>
 public partial class App : Application
 {
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+	/// <summary>
+	/// Loads the app.axaml.
+	/// </summary>
+	public override void Initialize()
+	{
+		AvaloniaXamlLoader.Load(this);
+	}
 
-    public override void OnFrameworkInitializationCompleted()
-    {
-        // Line below is needed to remove Avalonia data validation.
-        // Without this line you will get duplicate validations from both Avalonia and CT
-        BindingPlugins.DataValidators.RemoveAt(0);
+	/// <summary>
+	/// Initializes the UI.
+	/// </summary>
+	public override void OnFrameworkInitializationCompleted()
+	{
+		// Line below is needed to remove Avalonia data validation.
+		// Without this line you will get duplicate validations from both Avalonia and CT
+		BindingPlugins.DataValidators.RemoveAt(0);
 
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainViewModel()
-            };
-        }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = new MainViewModel()
-            };
-        }
+		MainViewModel viewModel = new();
 
-        base.OnFrameworkInitializationCompleted();
-    }
+		if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+		{
+			ArgumentParser.Instance.Parse(desktop.Args ?? []);
+
+			if (!string.IsNullOrWhiteSpace(ArgumentParser.Instance.ScriptPath))
+			{
+				if (!CLI.Console.HandleScript(ArgumentParser.Instance.ScriptPath))
+				{
+					ServiceProvider.LogService?.LogError("Script did not execute successfully.");
+				}
+			}
+
+			desktop.MainWindow = new MainWindow
+			{
+				DataContext = viewModel
+			};
+		}
+
+		base.OnFrameworkInitializationCompleted();
+	}
 }

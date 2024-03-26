@@ -1,8 +1,11 @@
 ﻿using Luna.Core;
 using Luna.Core.Target;
 
-namespace Luna.Targets.VisualStudio.Projects
+namespace Luna.Targets.VisualStudio
 {
+	/// <summary>
+	/// Helper Enum to mark a project as a specific type.
+	/// </summary>
 	public enum VisualStudioProjectType
 	{
 		None = 0,
@@ -27,8 +30,17 @@ namespace Luna.Targets.VisualStudio.Projects
 	/// <param name="name">Name of the project.</param>
 	/// <param name="relativePath">Relative project path from the solution.</param>
 	/// <param name="guid">Project guid.</param>
-	public abstract class BaseProject(Guid typeGuid, string name, string relativePath, Guid guid, Solution solution) : IProject
+	/// <param name="solution">Visual Studio solution.</param>
+	/// <param name="extension">Extension of the project file (without .)</param>
+	public class Project(Guid typeGuid, string name, string relativePath, Guid guid, Solution solution, string extension) : IProject
 	{
+		private readonly ProjectEntry _projectRoot = new("Project", "", [], []);
+
+		/// <summary>
+		/// Gets the project root.
+		/// </summary>
+		public ProjectEntry ProjectRoot => _projectRoot;
+
 		/// <summary>
 		/// Gets the guid of the type of this project.
 		/// </summary>
@@ -52,7 +64,7 @@ namespace Luna.Targets.VisualStudio.Projects
 		/// <summary>
 		/// Gets the file extension of this project.
 		/// </summary>
-		public abstract string Extension { get; }
+		public string Extension => extension;
 
 		/// <summary>
 		/// Gets the solution this project belongs to.
@@ -63,7 +75,29 @@ namespace Luna.Targets.VisualStudio.Projects
 		/// Write the project to file.
 		/// </summary>
 		/// <returns>True if successful, otherwise false.</returns>
-		public abstract bool WriteFile();
+		public bool WriteFile()
+		{
+			ILogService? logService = ServiceProvider.LogService;
+
+			string projectDir = $"{RelativePath}\\{Name}\\";
+			string projectFile = $"{projectDir}{Name}.{Extension}";
+			logService?.Log($"Writing Project: {projectFile}");
+
+			string fileBuffer = "";
+			WriteTreeToBuffer(ProjectRoot, ref fileBuffer);
+
+			string fullProjectDirPath = Path.Combine(Path.GetDirectoryName(Solution.SolutionPath) ?? "", projectDir);
+			string fullProjectFilePath = Path.Combine(Path.GetDirectoryName(Solution.SolutionPath) ?? "", projectFile);
+			if (!Directory.Exists(Path.GetDirectoryName(fullProjectDirPath)))
+			{
+				Directory.CreateDirectory(fullProjectDirPath);
+			}
+
+			File.WriteAllText(fullProjectFilePath, fileBuffer);
+
+			logService?.Log("Done");
+			return true;
+		}
 
 		/// <summary>
 		/// Returns Visual Studio specific guid for the given project type.

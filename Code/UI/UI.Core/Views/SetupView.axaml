@@ -1,0 +1,185 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Luna.UI.ViewModels"
+             xmlns:helpers="clr-namespace:Luna.UI.Helpers"
+             xmlns:luna="using:Luna.Core"
+             xmlns:sys="using:System"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Luna.UI.Views.SetupView"
+             x:DataType="vm:MainViewModel"
+             IsVisible="{Binding !IsConfigurated}">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Grid Margin="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <ProgressBar IsIndeterminate="True"
+                   Height="25"
+                   Margin="2"
+                   IsVisible="{Binding IsBusy}" />
+
+      <StackPanel Margin="2"
+                  Grid.Column="1"
+                Orientation="Horizontal">
+        <Button Content="Load Config"
+                Command="{Binding LoadCommand}"
+                Margin="2" />
+        <Button Content="Configurate"
+                Command="{Binding ConfigurateCommand}"
+                Margin="2" />
+      </StackPanel>
+    </Grid>
+
+    <Grid Grid.Row="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <TextBlock Text="Code Path:"
+                   VerticalAlignment="Center"
+                   Margin="2" />
+      <TextBox Text="{Binding CodePath}"
+               Grid.Column="1"
+               VerticalAlignment="Center"
+               Margin="2" />
+      <Button Content="..."
+              Grid.Column="2"
+              VerticalAlignment="Center"
+              Margin="2"
+              Command="{Binding SearchCodePathCommand}" />
+
+      <TextBlock Text="Meta Path:"
+                 Grid.Row="1"
+                 VerticalAlignment="Center"
+                 Margin="2" />
+      <TextBox Text="{Binding MetaPath}"
+               Grid.Column="1"
+               Grid.Row="1"
+               VerticalAlignment="Center"
+               Margin="2" />
+      <Button Content="..."
+              Grid.Column="2"
+              Grid.Row="1"
+              VerticalAlignment="Center"
+              Margin="2"
+              Command="{Binding SearchMetaPathCommand}" />
+
+      <TextBlock Text="Solution Path:"
+                 Grid.Row="2"
+                 VerticalAlignment="Center"
+                 Margin="2" />
+      <TextBox Text="{Binding SolutionPath}"
+               Grid.Column="1"
+               Grid.Row="2"
+               VerticalAlignment="Center"
+               Margin="2" />
+      <Button Content="..."
+              Grid.Column="2"
+              Grid.Row="2"
+              VerticalAlignment="Center"
+              Margin="2"
+              Command="{Binding SearchSolutionPathCommand}" />
+
+      <TextBlock Text="Workspace Path:"
+                 Grid.Row="3"
+                 VerticalAlignment="Center"
+                 Margin="2" />
+      <TextBox Text="{Binding WorkspacePath}"
+               Grid.Column="1"
+               Grid.Row="3"
+               VerticalAlignment="Center"
+               Margin="2" />
+      <Button Content="..."
+              Grid.Column="2"
+              Grid.Row="3"
+              VerticalAlignment="Center"
+              Margin="2"
+              Command="{Binding SearchWorkspacePathCommand}" />
+
+      <TextBlock Text="Plugins:"
+                 Grid.Row="4"
+                 VerticalAlignment="Center"
+                 Margin="2" />
+      <ListBox Grid.Column="1"
+               Grid.Row="4"
+               Margin="2"
+               ItemsSource="{Binding Plugins}">
+        <ListBox.ItemTemplate>
+          <DataTemplate DataType="{x:Type helpers:Entry}">
+            <CheckBox IsChecked="{Binding IsEnabled}"
+                      Content="{Binding Name}"
+                      VerticalAlignment="Center"
+                      VerticalContentAlignment="Center" />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <TextBlock Text="Targets:"
+                 Grid.Row="5"
+                 VerticalAlignment="Center"
+                 Margin="2" />
+      <ListBox Grid.Column="1"
+               Grid.Row="5"
+               Margin="2"
+               ItemsSource="{Binding Targets}">
+        <ListBox.ItemTemplate>
+          <DataTemplate DataType="{x:Type helpers:Entry}">
+            <CheckBox IsChecked="{Binding IsEnabled}"
+                      Content="{Binding Name}" />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <TextBlock Text="Name:"
+                 Grid.Row="6"
+                 VerticalAlignment="Center"
+                 Margin="2" />
+      <TextBox Text="{Binding Name}"
+               Grid.Column="1"
+               Grid.Row="6"
+               VerticalAlignment="Center"
+               Margin="2" />
+    </Grid>
+
+    <StackPanel Orientation="Vertical"
+                Grid.Row="2">
+      <TextBox Text="{Binding Output}"
+             Height="200"
+             Margin="2"
+             IsReadOnly="True" />
+      <TextBox Watermark="Input"
+               Margin="2"
+               Text="{Binding Input, Mode=TwoWay}"
+               AcceptsReturn="True"
+               AcceptsTab="False" />
+    </StackPanel>
+  </Grid>
+</UserControl>

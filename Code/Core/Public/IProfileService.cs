@@ -23,5 +23,12 @@
 		/// <param name="index">Index of the profile.</param>
 		/// <returns>Valid string if successful, otherwise Null.</returns>
 		string? GetProfileAt(int index);
+
+		/// <summary>
+		/// Gets if the service has the given profile.
+		/// </summary>
+		/// <param name="profile">Profile</param>
+		/// <returns>True if it has the profile, otherwise false.</returns>
+		bool HasProfile(string profile);
 	}
 }

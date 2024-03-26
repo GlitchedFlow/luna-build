@@ -98,5 +98,11 @@
 		/// </summary>
 		/// <param name="visitor">Visitor function</param>
 		void VisitGroupedOptions(Func<IGrouping<string, IOption>, bool> visitor);
+
+		/// <summary>
+		/// Returns the count of all registered options.
+		/// </summary>
+		/// <returns>Count of options.</returns>
+		int GetOptionsCount();
 	}
 }

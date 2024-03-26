@@ -13,6 +13,12 @@
 		/// <param name="platform">Name of the platform.</param>
 		public void AddPlatform(string platform)
 		{
+			if (_platforms.FirstOrDefault(x => x == platform) != null)
+			{
+				// Platform already added.
+				return;
+			}
+
 			_platforms.Add(platform);
 		}
 
@@ -37,6 +43,16 @@
 				return null;
 			}
 			return _platforms[index];
+		}
+
+		/// <summary>
+		/// Gets if the service has the given platform.
+		/// </summary>
+		/// <param name="platform">Platform</param>
+		/// <returns>True if it has the platform, otherwise false.</returns>
+		public bool HasPlatform(string platform)
+		{
+			return _platforms.FirstOrDefault(p => p == platform) != null;
 		}
 
 		/// <summary>

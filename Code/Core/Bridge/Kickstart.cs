@@ -8,8 +8,8 @@ namespace Luna.Core
 	/// </summary>
 	public class Kickstart
 	{
-		private const string _pluginsDir = "Plugins";
-		private const string _targetsDir = "Targets";
+		public const string PluginsDir = "Plugins";
+		public const string TargetsDir = "Targets";
 
 		/// <summary>
 		/// Scans and loads all types from a list of requested files in a directory.
@@ -18,11 +18,12 @@ namespace Luna.Core
 		/// <param name="dir">Directory info</param>
 		/// <param name="requestedFiles">Requested files.</param>
 		/// <param name="callback">Callback for the created instance.</param>
-		private static void ScanDirAndLoadTypes<TYPE>(DirectoryInfo dir, List<string> requestedFiles, Action<TYPE> callback)
+		public static void ScanDirAndLoadTypes<TYPE>(DirectoryInfo dir, List<string>? requestedFiles, Action<TYPE> callback)
 		{
-			foreach (FileInfo file in dir.GetFiles("*.dll").Where(x => requestedFiles.Contains(Path.GetFileNameWithoutExtension(x.Name))))
+			IEnumerable<FileInfo> fileList = requestedFiles != null ? dir.GetFiles("*.dll").Where(x => requestedFiles.Contains(Path.GetFileNameWithoutExtension(x.Name))) : dir.GetFiles("*.dll");
+			foreach (FileInfo file in fileList)
 			{
-				requestedFiles.Remove(Path.GetFileNameWithoutExtension(file.FullName));
+				requestedFiles?.Remove(Path.GetFileNameWithoutExtension(file.FullName));
 
 				try
 				{
@@ -52,9 +53,9 @@ namespace Luna.Core
 		{
 			Log.Write($"Initializing Plugins");
 
-			Log.OpenScope();
+			using LogScope scope = new();
 
-			DirectoryInfo curPluginDir = new(Path.Combine(LunaConfig.Instance.WorkspacePath, _pluginsDir));
+			DirectoryInfo curPluginDir = new(Path.Combine(LunaConfig.Instance.WorkspacePath, PluginsDir));
 
 			List<string> requestedPlugins = [.. LunaConfig.Instance.Plugins];
 
@@ -63,13 +64,11 @@ namespace Luna.Core
 				ScanDirAndLoadTypes(curPluginDir, requestedPlugins, (IMeta instance) => instance.Register());
 			}
 
-			curPluginDir = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _pluginsDir));
+			curPluginDir = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDir));
 			if (curPluginDir.Exists)
 			{
 				ScanDirAndLoadTypes(curPluginDir, requestedPlugins, (IMeta instance) => instance.Register());
 			}
-
-			Log.CloseScope();
 		}
 
 		/// <summary>
@@ -89,7 +88,7 @@ namespace Luna.Core
 
 			Log.Write($"Initializing Meta and Buildables ({lunaBridgeDll})");
 
-			Log.OpenScope();
+			using LogScope scope = new();
 
 			try
 			{
@@ -126,12 +125,10 @@ namespace Luna.Core
 			catch (Exception e)
 			{
 				Log.Error($"Luna Bridge initialization failed. Reason: {e}");
-
-				Log.CloseScope();
 				return;
 			}
 
-			Log.CloseScope();
+			((OptionService?)ServiceProvider.OptionService)?.LoadFromFile();
 		}
 
 		/// <summary>
@@ -141,9 +138,9 @@ namespace Luna.Core
 		{
 			Log.Write($"Initializing Targets");
 
-			Log.OpenScope();
+			using LogScope scope = new();
 
-			DirectoryInfo curTargetsDir = new(Path.Combine(LunaConfig.Instance.WorkspacePath, _targetsDir));
+			DirectoryInfo curTargetsDir = new(Path.Combine(LunaConfig.Instance.WorkspacePath, TargetsDir));
 
 			List<string> requestedTargets = [.. LunaConfig.Instance.Targets];
 
@@ -152,13 +149,11 @@ namespace Luna.Core
 				ScanDirAndLoadTypes(curTargetsDir, requestedTargets, (ITarget instance) => instance.Register());
 			}
 
-			curTargetsDir = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _targetsDir));
+			curTargetsDir = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, TargetsDir));
 			if (curTargetsDir.Exists)
 			{
 				ScanDirAndLoadTypes(curTargetsDir, requestedTargets, (ITarget instance) => instance.Register());
 			}
-
-			Log.CloseScope();
 		}
 
 		/// <summary>
@@ -168,7 +163,7 @@ namespace Luna.Core
 		{
 			Log.Write($"Initializing Core Services");
 
-			Log.OpenScope();
+			using LogScope scope = new();
 
 			try
 			{
@@ -176,8 +171,6 @@ namespace Luna.Core
 				if (coreAssembly == null)
 				{
 					Log.Error("Core Services not found.");
-
-					Log.CloseScope();
 					return;
 				}
 
@@ -194,12 +187,8 @@ namespace Luna.Core
 			catch (Exception e)
 			{
 				Log.Error($"Luna Bridge initialization failed. Reason: {e}");
-
-				Log.CloseScope();
 				return;
 			}
-
-			Log.CloseScope();
 		}
 	}
 }

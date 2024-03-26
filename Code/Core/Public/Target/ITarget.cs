@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Generic interface to describe a target.
 	/// </summary>
-	public interface ITarget
+	public interface ITarget : ILuna
 	{
 		/// <summary>
 		/// Gets the name of the target.

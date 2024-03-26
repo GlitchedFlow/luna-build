@@ -2,38 +2,56 @@ using Luna.Core;
 
 namespace Luna.CLI.Modules.Options
 {
+	/// <summary>
+	/// Options list command for the CLI.
+	/// </summary>
 	public class ListCommand : BaseCommand
 	{
+		/// <summary>
+		/// Gets the name of the command.
+		/// </summary>
 		public override string Name => "list";
 
+		/// <summary>
+		/// Gets the description of the command.
+		/// </summary>
 		public override string Description => "List all options";
 
-		public override void Execute(string[] args)
+		/// <summary>
+		/// Executes the command.
+		/// </summary>
+		/// <param name="args">Arguments for the command.</param>
+		/// <returns>True if successful, otherwise false.</returns>
+		public override bool Execute(string[] args)
 		{
 			IOptionService? optionService = ServiceProvider.OptionService;
 			ILogService? logSerivce = ServiceProvider.LogService;
-			if (logSerivce != null)
+			if (logSerivce == null)
 			{
-				logSerivce.Log($"== Registered Options [Count: {BaseModule.RegisteredModules.Count}] == ");
-				using LogScope scope = new();
-
-				optionService?.VisitGroupedOptions(x =>
-				{
-					if (!string.IsNullOrEmpty(x.Key))
-					{
-						logSerivce.Log(x.Key);
-
-						using LogScope groupScope = new();
-
-						VisitGroup(x, logSerivce);
-					}
-					else
-					{
-						VisitGroup(x, logSerivce);
-					}
-					return true;
-				});
+				return false;
 			}
+
+			logSerivce.Log($"== Registered Options [Count: {optionService?.GetOptionsCount()}] == ");
+			using LogScope scope = new();
+
+			optionService?.VisitGroupedOptions(x =>
+			{
+				if (!string.IsNullOrEmpty(x.Key))
+				{
+					logSerivce.Log(x.Key);
+
+					using LogScope groupScope = new();
+
+					VisitGroup(x, logSerivce);
+				}
+				else
+				{
+					VisitGroup(x, logSerivce);
+				}
+				return true;
+			});
+
+			return true;
 		}
 
 		private static void VisitGroup(IGrouping<string, IOption> x, ILogService logSerivce)

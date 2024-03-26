@@ -5,7 +5,7 @@ namespace Luna.Core
 	/// <summary>
 	/// Generic interface that describes a build service.
 	/// </summary>
-	public interface IBuild
+	public interface IBuild : ILuna
 	{
 		/// <summary>
 		/// Registers the build services. Called by system.

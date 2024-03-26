@@ -13,7 +13,12 @@
 		/// <returns>The path to the cache folder.</returns>
 		internal static string GetCacheFolder()
 		{
-			return Path.Combine(LunaConfig.Instance.SolutionPath, c_cacheFolder);
+			string path = Path.Combine(LunaConfig.Instance.SolutionPath, c_cacheFolder);
+			if (!Path.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+			}
+			return path;
 		}
 	}
 }

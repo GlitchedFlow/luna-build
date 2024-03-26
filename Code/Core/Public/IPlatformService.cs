@@ -23,5 +23,12 @@
 		/// <param name="index">Index of the platform.</param>
 		/// <returns>Valid string if successful, otherwise Null.</returns>
 		string? GetPlatformAt(int index);
+
+		/// <summary>
+		/// Gets if the service has the given platform.
+		/// </summary>
+		/// <param name="platform">Platform</param>
+		/// <returns>True if it has the platform, otherwise false.</returns>
+		bool HasPlatform(string platform);
 	}
 }

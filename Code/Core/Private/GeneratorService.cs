@@ -13,15 +13,20 @@ namespace Luna.Core
 		public ITarget? ActiveTarget { get; set; } = null;
 
 		/// <summary>
-		/// Generate the soltion for the active target.
+		/// Generate the solution for the active target.
 		/// </summary>
 		/// <returns>True if success, otherwise false.</returns>
 		public bool Generate()
 		{
+			// Save current option setup.
+			((OptionService?)ServiceProvider.OptionService)?.SaveToFile();
+
 			if (ActiveTarget == null)
 			{
 				return false;
 			}
+
+			ServiceProvider.RegistryService.GetSourceCodeLocation(this);
 
 			return ActiveTarget.GenerateSolution();
 		}

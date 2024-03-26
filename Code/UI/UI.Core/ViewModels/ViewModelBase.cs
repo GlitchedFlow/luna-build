@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace LunaUI.ViewModels;
+namespace Luna.UI.ViewModels;
 
+/// <summary>
+/// Base class for all view models.
+/// </summary>
 public class ViewModelBase : ObservableObject
 {
 }

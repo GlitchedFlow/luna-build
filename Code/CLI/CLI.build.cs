@@ -1,7 +1,6 @@
 using Luna.Core;
 using Luna.Core.Target;
 using Luna.Targets.VisualStudio;
-using Luna.Targets.VisualStudio.Projects.CSharp;
 using Luna.BuildScript.Meta;
 
 namespace Luna.BuildScript.CLI
@@ -20,13 +19,13 @@ namespace Luna.BuildScript.CLI
 		/// <returns>The project</returns>
 		public IProject? Generate(ISolution solution)
 		{
-			Project project = new(NAME, "Luna", "5113F5B2-168E-4CED-89A4-016C235EFAE9".AsGuid(), (Solution)solution);
-
 			ProjectService? projectService = ServiceProvider.RegistryService.GetMetaService<ProjectService>();
 			if (projectService == null)
 			{
-				return project;
+				return null;
 			}
+
+			Project project = new(Project.ProjectToGuid(VisualStudioProjectType.CSharp), NAME, "Luna", "5113F5B2-168E-4CED-89A4-016C235EFAE9".AsGuid(), (Solution)solution, ProjectService.ProjectExtension);
 
 			using (ProjectService.Scope scope = new(project.ProjectRoot))
 			{
@@ -41,6 +40,11 @@ namespace Luna.BuildScript.CLI
 								new("Modules\\Core\\CoreModule.cs", "Modules\\Core\\CoreModule.cs"),
 								new("Modules\\Core\\Commands\\ListCommand.cs", "Modules\\Core\\Commands\\ListCommand.cs"),
 								new("Modules\\Core\\Commands\\SwitchCommand.cs", "Modules\\Core\\Commands\\SwitchCommand.cs"),
+								new("Modules\\Core\\Commands\\GetCommand.cs", "Modules\\Core\\Commands\\GetCommand.cs"),
+								new("Modules\\Core\\Commands\\SetCommand.cs", "Modules\\Core\\Commands\\SetCommand.cs"),
+								new("Modules\\Core\\Commands\\CompileCommand.cs", "Modules\\Core\\Commands\\CompileCommand.cs"),
+								new("Modules\\Core\\Commands\\InitCommand.cs", "Modules\\Core\\Commands\\InitCommand.cs"),
+								new("Modules\\Core\\Commands\\LoadCommand.cs", "Modules\\Core\\Commands\\LoadCommand.cs"),
 
 								new("Modules\\Generator\\GeneratorModule.cs", "Modules\\Generator\\GeneratorModule.cs"),
 								new("Modules\\Generator\\Commands\\GenerateCommand.cs", "Modules\\Generator\\Commands\\GenerateCommand.cs"),

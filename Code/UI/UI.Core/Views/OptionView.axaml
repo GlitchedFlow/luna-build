@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Luna.UI.ViewModels"
+             xmlns:helpers="clr-namespace:Luna.UI.Helpers"
+             xmlns:luna="using:Luna.Core"
+             xmlns:sys="using:System"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Luna.UI.Views.OptionView"
+             x:DataType="vm:MainViewModel"
+             IsVisible="{Binding IsConfigurated}">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <SplitButton Content="Generate"
+                     Command="{Binding GenerateCommand}"
+                     Margin="2"
+                   HorizontalAlignment="Right">
+      <SplitButton.Flyout>
+        <Flyout>
+          <ItemsControl ItemsSource="{Binding AvailableTargets}"
+                        Padding="0">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="{x:Type sys:String}">
+                <Button Content="{Binding }"
+                        Command="{Binding $parent[ItemsControl].((vm:MainViewModel)DataContext).GenerateCommand}"
+                        CommandParameter="{Binding }" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Flyout>
+      </SplitButton.Flyout>
+    </SplitButton>
+
+    <TreeView Margin="2"
+                Grid.Row="1"
+                ItemsSource="{Binding OptionGroups}">
+      <TreeView.ItemTemplate>
+        <helpers:OptionTemplateSelector>
+          <TreeDataTemplate DataType="{x:Type luna:IFlagOption}"
+                        x:Key="FlagOption">
+            <CheckBox Content="{Binding Name}"
+                      IsChecked="{Binding IsEnabled}" />
+          </TreeDataTemplate>
+          <TreeDataTemplate DataType="{x:Type luna:IValueOption}"
+                        x:Key="ValueOption">
+            <TextBlock Text="{Binding Value}" />
+          </TreeDataTemplate>
+          <TreeDataTemplate DataType="{x:Type helpers:OptionGroup}"
+                            x:Key="OptionGroup"
+                            ItemsSource="{Binding Children}">
+            <TextBlock Text="{Binding Name}" />
+          </TreeDataTemplate>
+        </helpers:OptionTemplateSelector>
+      </TreeView.ItemTemplate>
+      <TreeView.ItemContainerTheme>
+        <ControlTheme TargetType="TreeViewItem" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+          <Setter Property="IsExpanded" Value="True" />
+        </ControlTheme>
+      </TreeView.ItemContainerTheme>
+    </TreeView>
+
+    <StackPanel Orientation="Vertical"
+                Grid.Row="2">
+      <TextBox Text="{Binding Output}"
+             Height="200"
+             Margin="2"
+             IsReadOnly="True" />
+      <TextBox Watermark="Input"
+               Margin="2"
+               Text="{Binding Input, Mode=TwoWay}"
+               AcceptsReturn="True"
+               AcceptsTab="False" />
+    </StackPanel>
+  </Grid>
+</UserControl>

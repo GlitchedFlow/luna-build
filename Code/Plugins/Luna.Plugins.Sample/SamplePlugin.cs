@@ -1,15 +1,20 @@
 ﻿using Luna.Core;
 
-namespace Luna.Meta.Cpp.Projects
+namespace Luna.Plugins
 {
 	/// <summary>
 	/// Meta service that can generate projects.
 	/// </summary>
-	public class GeneratorService : IMeta
+	public class SamplePlugin : IMeta
 	{
+		/// <summary>
+		/// Registers the plugin with luna.
+		/// </summary>
 		public void Register()
 		{
 			ServiceProvider.RegistryService.RegisterMetaService(this);
 		}
+
+		// Add functionality in here which code from the luna bridge can use.
 	}
 }

@@ -11,16 +11,6 @@ namespace Luna.Core
 		public static ArgumentParser Instance { get; private set; } = new();
 
 		/// <summary>
-		/// No Compile flag for Luna Bridge.
-		/// </summary>
-		public bool NoCompile { get; private set; } = false;
-
-		/// <summary>
-		/// Path to luna config.
-		/// </summary>
-		public string ConfigPath { get; private set; } = "";
-
-		/// <summary>
 		/// Gets or sets the path to a script file.
 		/// </summary>
 		public string ScriptPath { get; set; } = "";
@@ -43,42 +33,19 @@ namespace Luna.Core
 
 			if (listedArgs.Count == 0)
 			{
-				Help();
-
-				return false;
+				return true;
 			}
 
 			using LogScope scope = new();
 
-			if (Path.Exists(listedArgs[0]) && File.Exists(listedArgs[0]) && Path.GetExtension(listedArgs[0]) == ScriptExtension)
+			if (!File.Exists(listedArgs[0]) || Path.GetExtension(listedArgs[0]) != ScriptExtension)
 			{
-				ScriptPath = listedArgs[0];
+				Log.Error($"{listedArgs[0]} is not a path to valid luna script file.");
+				return false;
 			}
 
-			if (listedArgs.Contains("-nocode"))
-			{
-				Log.Write("Flag -nocode enabled. Skipping LunaBridge compile step.");
+			ScriptPath = listedArgs[0];
 
-				NoCompile = true;
-			}
-			if (listedArgs.Contains("-config"))
-			{
-				int index = listedArgs.IndexOf("-config");
-				if (index + 1 > listedArgs.Count - 1)
-				{
-					Log.Error("'-config' parameter is missing its value.");
-
-					return false;
-				}
-
-				ConfigPath = listedArgs[index + 1];
-				if (!Path.Exists(ConfigPath))
-				{
-					Log.Error($"{ConfigPath} is not a valid path for '-config' parameter");
-
-					return false;
-				}
-			}
 			if (listedArgs.Contains("--help"))
 			{
 				Help();
@@ -96,7 +63,7 @@ namespace Luna.Core
 		public void Help()
 		{
 			Log.Write("Usage:");
-			Log.Write("\tLunaCLI.exe -config $PATH_TO_CONFIG$");
+			Log.Write("\tLunaCLI.exe $PATH_TO_SCRIPTFILE$");
 			Log.Write("Help:");
 			Log.Write("\tLunaCLI.exe --help");
 			Log.Write("\t\tPrints help information for the Luna CLI.");

@@ -1,21 +1,21 @@
 using Luna.Core;
 
-namespace Luna.CLI.Modules.Plugins
+namespace Luna.CLI.Modules.Core
 {
 	/// <summary>
-	/// Plugins list command for the CLI.
+	/// Compile Command for the CLI.
 	/// </summary>
-	public class ListCommand : BaseCommand
+	public class CompileCommand : BaseCommand
 	{
 		/// <summary>
 		/// Gets the name of the command.
 		/// </summary>
-		public override string Name => "list";
+		public override string Name => "compile";
 
 		/// <summary>
 		/// Gets the description of the command.
 		/// </summary>
-		public override string Description => "List all requested plugins";
+		public override string Description => "Compiles the luna bridge project";
 
 		/// <summary>
 		/// Executes the command.
@@ -30,12 +30,10 @@ namespace Luna.CLI.Modules.Plugins
 				return false;
 			}
 
-			logSerivce.Log($"== Requested Plugins [Count: {LunaConfig.Instance.Plugins.Count}] == ");
-			using LogScope scope = new();
-
-			foreach (string plugin in LunaConfig.Instance.Plugins)
+			if (!Compiler.Compile())
 			{
-				logSerivce.Log(plugin);
+				logSerivce.LogError($"Compile step failed.");
+				return false;
 			}
 
 			return true;

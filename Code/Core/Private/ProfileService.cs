@@ -13,6 +13,12 @@
 		/// <param name="profile">Name of the profile.</param>
 		public void AddProfile(string profile)
 		{
+			if (_profiles.FirstOrDefault(p => p == profile) != null)
+			{
+				// Profile already added.
+				return;
+			}
+
 			_profiles.Add(profile);
 		}
 
@@ -38,6 +44,16 @@
 			}
 
 			return _profiles[index];
+		}
+
+		/// <summary>
+		/// Gets if the service has the given profile.
+		/// </summary>
+		/// <param name="profile">Profile</param>
+		/// <returns>True if it has the profile, otherwise false.</returns>
+		public bool HasProfile(string profile)
+		{
+			return _profiles.FirstOrDefault(p => p == profile) != null;
 		}
 
 		/// <summary>

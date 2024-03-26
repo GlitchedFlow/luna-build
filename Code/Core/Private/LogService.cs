@@ -70,7 +70,7 @@ namespace Luna.Core
 			{
 				_cachedFileContent += $"{formatted}\r\n";
 
-				if (LunaConfig.Instance != null)
+				if (LunaConfig.Instance)
 				{
 					File.WriteAllText(Path.Combine(Cache.GetCacheFolder(), _logFileName), _cachedFileContent);
 				}

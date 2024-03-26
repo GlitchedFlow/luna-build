@@ -1,5 +1,5 @@
 using Luna.Core;
-using Luna.Targets.VisualStudio.Projects;
+using Luna.Targets.VisualStudio;
 using System.Runtime.CompilerServices;
 
 namespace Luna.BuildScript.Meta
@@ -11,6 +11,9 @@ namespace Luna.BuildScript.Meta
 	{
 		private ProjectEntry? _activeProjectTree = null;
 		private string _outputPath = "";
+
+		public const string AvaloniaVersion = "11.0.0";
+		public const string ProjectExtension = "csproj";
 
 		public ProjectService()
 		{
@@ -29,7 +32,7 @@ namespace Luna.BuildScript.Meta
 				ProjectService? service = ServiceProvider.RegistryService.GetMetaService<ProjectService>();
 				if (service != null)
 				{
-					_previousProjectTree = service?._activeProjectTree;
+					_previousProjectTree = service._activeProjectTree;
 					service._activeProjectTree = root;
 				}
 			}
@@ -132,7 +135,7 @@ namespace Luna.BuildScript.Meta
 			_activeProjectTree.Children.Add(new("ItemGroup", "", [
 				new("AvaloniaResource", "", [], new()
 				{
-					{ "Include", Path.Combine(Path.GetDirectoryName(path), "Assets\\**") },
+					{ "Include", Path.Combine(Path.GetDirectoryName(path) ?? "", "Assets\\**") },
 					{ "Link", "Assets\\%(RecursiveDir)%(Filename)%(Extension)" }
 				})
 			], []));
@@ -141,17 +144,17 @@ namespace Luna.BuildScript.Meta
 				new("PackageReference", "", [], new()
 				{
 					{ "Include", "Avalonia"},
-					{ "Version", "$(AvaloniaVersion)"}
+					{ "Version", AvaloniaVersion}
 				}),
 				new("PackageReference", "", [], new()
 				{
 					{ "Include", "Avalonia.Themes.Fluent"},
-					{ "Version", "$(AvaloniaVersion)"}
+					{ "Version", AvaloniaVersion}
 				}),
 				new("PackageReference", "", [], new()
 				{
 					{ "Include", "Avalonia.Fonts.Inter"},
-					{ "Version", "$(AvaloniaVersion)"}
+					{ "Version", AvaloniaVersion}
 				}),
 				new("PackageReference", "", [], new()
 				{
@@ -162,7 +165,7 @@ namespace Luna.BuildScript.Meta
 				{
 					{ "Condition", "'$(Configuration)' == 'Debug'"},
 					{ "Include", "Avalonia.Diagnostics" },
-					{ "Version", "$(AvaloniaVersion)"}
+					{ "Version", AvaloniaVersion}
 				}),
 			], []));
 
@@ -186,7 +189,7 @@ namespace Luna.BuildScript.Meta
 				return this;
 			}
 
-			string manifestPath = Path.IsPathFullyQualified(pathToManiFest) ? pathToManiFest : Path.Combine(Path.GetDirectoryName(path), pathToManiFest);
+			string manifestPath = Path.IsPathFullyQualified(pathToManiFest) ? pathToManiFest : Path.Combine(Path.GetDirectoryName(path) ?? "", pathToManiFest);
 			if (!File.Exists(manifestPath))
 			{
 				ServiceProvider.LogService?.LogError($"File: {manifestPath} does not exist.");
@@ -206,8 +209,8 @@ namespace Luna.BuildScript.Meta
 			_activeProjectTree.Children.Add(new("ItemGroup", "", [
 				new("PackageReference", "", [], new()
 				{
-					{ "Include", "Avalonia.Desktop" },
-					{ "Version", "$(AvaloniaVersion)" },
+					{ "Include", "Avalonia.Desktop"},
+					{ "Version", AvaloniaVersion},
 				})
 			], []));
 
@@ -279,7 +282,7 @@ namespace Luna.BuildScript.Meta
 
 			foreach (FileRecord file in files)
 			{
-				string path = Path.IsPathFullyQualified(file.physicalPath) ? file.physicalPath : Path.Combine(Path.GetDirectoryName(codeLocation), file.physicalPath);
+				string path = Path.IsPathFullyQualified(file.physicalPath) ? file.physicalPath : Path.Combine(Path.GetDirectoryName(codeLocation) ?? "", file.physicalPath);
 				if (!File.Exists(path))
 				{
 					ServiceProvider.LogService?.LogError($"File: {path} does not exist.");
@@ -430,6 +433,27 @@ namespace Luna.BuildScript.Meta
 			PostBuildCommands([
 				$"xcopy \"$(ProjectDir)$(OutDir)$(TargetName).dll\" \"{_outputPath}\\$(Platform)_$(Configuration)\\Targets\\\" /y",
 				$"xcopy \"$(ProjectDir)$(OutDir)$(TargetName).pdb\" \"{_outputPath}\\$(Platform)_$(Configuration)\\Targets\\\" /y"
+			]);
+
+			return this;
+		}
+
+		/// <summary>
+		/// Marks the project as a CLI plugin.
+		/// </summary>
+		/// <returns>Project Service</returns>
+		public ProjectService CLIPlugin()
+		{
+			if (_activeProjectTree == null)
+			{
+				return this;
+			}
+
+			Library();
+
+			PostBuildCommands([
+				$"xcopy \"$(ProjectDir)$(OutDir)$(TargetName).dll\" \"{_outputPath}\\$(Platform)_$(Configuration)\\CLI\\Plugins\\\" /y",
+				$"xcopy \"$(ProjectDir)$(OutDir)$(TargetName).pdb\" \"{_outputPath}\\$(Platform)_$(Configuration)\\CLI\\Plugins\\\" /y"
 			]);
 
 			return this;

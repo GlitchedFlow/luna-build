@@ -2,20 +2,19 @@ using Luna.BuildScript.Meta;
 using Luna.Core;
 using Luna.Core.Target;
 using Luna.Targets.VisualStudio;
-using Luna.Targets.VisualStudio.Projects.CSharp;
 
-namespace Luna.BuildScript.Plugins.CppProject
+namespace Luna.BuildScript.Plugins.Sample
 {
 	/// <summary>
-	/// Adds the CppProject plugin project
+	/// Adds the Sample plugin project
 	/// </summary>
 	public class Builder : IBuild
 	{
-		public const string NAME = "CppProject";
+		public const string NAME = "Sample";
 
 		private IFlagOption? _option = null;
 
-		public static Guid CPP_PROJECT = "{2CDC5CA5-4FF3-4784-B7C6-15FAC58C712E}".AsGuid();
+		public static Guid SAMPLE_PROJECT = "{2CDC5CA5-4FF3-4784-B7C6-15FAC58C712E}".AsGuid();
 
 		/// <summary>
 		/// Generates the project.
@@ -29,19 +28,19 @@ namespace Luna.BuildScript.Plugins.CppProject
 				return null;
 			}
 
-			Project project = new(NAME, "LunaPlugins", "{8F44E5DF-9A93-4561-8AE9-C337E69BF3CD}".AsGuid(), (Solution)solution);
-
 			ProjectService? projectService = ServiceProvider.RegistryService.GetMetaService<ProjectService>();
 			if (projectService == null)
 			{
-				return project;
+				return null;
 			}
+
+			Project project = new(Project.ProjectToGuid(VisualStudioProjectType.CSharp), NAME, "LunaPlugins", "{8F44E5DF-9A93-4561-8AE9-C337E69BF3CD}".AsGuid(), (Solution)solution, ProjectService.ProjectExtension);
 
 			using (ProjectService.Scope scope = new(project.ProjectRoot))
 			{
 				projectService.Plugin()
 							.Files([
-								new("GeneratorService.cs", "GeneratorService.cs")
+								new("SamplePlugin.cs", "SamplePlugin.cs")
 							])
 							.Reference([Core.Builder.NAME]);
 			}
@@ -56,7 +55,7 @@ namespace Luna.BuildScript.Plugins.CppProject
 		{
 			ServiceProvider.RegistryService.RegisterBuildService(this);
 
-			_option = ServiceProvider.OptionService?.RegisterFlagOption(CPP_PROJECT, "Cpp Projects", true, "Plugins");
+			_option = ServiceProvider.OptionService?.RegisterFlagOption(SAMPLE_PROJECT, "Sample Project", true, "Plugins");
 		}
 	}
 }

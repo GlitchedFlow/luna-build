@@ -1,4 +1,6 @@
 using Luna.Core.Target;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace Luna.Core
 {
@@ -10,6 +12,7 @@ namespace Luna.Core
 		private Dictionary<Guid, IBuild> _buildServiceByGuid = [];
 		private Dictionary<Guid, IMeta> _metaServiceByGuid = [];
 		private Dictionary<Guid, ITarget> _targetByGuid = [];
+		private Dictionary<ILuna, string?> _sourceCodeLocation = [];
 
 		#endregion Members
 
@@ -35,26 +38,29 @@ namespace Luna.Core
 		/// </summary>
 		/// <typeparam name="T">Type of the build service.</typeparam>
 		/// <param name="buildService">The instance of the build service.</param>
+		/// <param name="fileLocation">File location of the build service.</param>
 		/// <returns>True if successful, otherwise false.</returns>
-		public bool RegisterBuildService<T>(T buildService) where T : IBuild
+		public bool RegisterBuildService<T>(T buildService, [CallerFilePath] string? fileLocation = null) where T : IBuild
 		{
-			if (buildService != null)
+			if (buildService == null)
 			{
-				System.Type type = typeof(T);
-
-				if (GetBuildService(type.GUID) != null)
-				{
-					Log.Warning($"Build service {type.FullName} was already registered.");
-					return false;
-				}
-
-				_buildServiceByGuid.Add(type.GUID, buildService);
-				Log.Info($"Added Build Service: {type.FullName} with GUID: {type.GUID}");
-
-				return true;
+				return false;
 			}
 
-			return false;
+			System.Type type = typeof(T);
+
+			if (GetBuildService(type.GUID) != null)
+			{
+				Log.Warning($"Build service {type.FullName} was already registered.");
+				return false;
+			}
+
+			_buildServiceByGuid.Add(type.GUID, buildService);
+			Log.Info($"Added Build Service: {type.FullName} with GUID: {type.GUID}");
+
+			_sourceCodeLocation[buildService] = fileLocation;
+
+			return true;
 		}
 
 		/// <summary>
@@ -75,12 +81,12 @@ namespace Luna.Core
 		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public IBuild? GetBuildService(Guid guid)
 		{
-			if (_buildServiceByGuid.ContainsKey(guid))
+			if (!_buildServiceByGuid.TryGetValue(guid, out IBuild? value))
 			{
-				return _buildServiceByGuid[guid];
+				return null;
 			}
 
-			return null;
+			return value;
 		}
 
 		/// <summary>
@@ -123,26 +129,29 @@ namespace Luna.Core
 		/// </summary>
 		/// <typeparam name="T">Type of the meta service.</typeparam>
 		/// <param name="metaService">Instance of the meta service.</param>
+		/// <param name="fileLocation">File location of the build service.</param>
 		/// <returns>True if successful, otherwise false.</returns>
-		public bool RegisterMetaService<T>(T metaService) where T : IMeta
+		public bool RegisterMetaService<T>(T metaService, [CallerFilePath] string? fileLocation = null) where T : IMeta
 		{
-			if (metaService != null)
+			if (metaService == null)
 			{
-				System.Type type = typeof(T);
-
-				if (GetMetaService(type.GUID) != null)
-				{
-					Log.Warning($"Meta service {type.FullName} was already registered.");
-					return false;
-				}
-
-				_metaServiceByGuid.Add(type.GUID, metaService);
-				Log.Info($"Added Meta Service: {type.FullName} with GUID: {type.GUID}");
-
-				return true;
+				return false;
 			}
 
-			return false;
+			System.Type type = typeof(T);
+
+			if (GetMetaService(type.GUID) != null)
+			{
+				Log.Warning($"Meta service {type.FullName} was already registered.");
+				return false;
+			}
+
+			_metaServiceByGuid.Add(type.GUID, metaService);
+			Log.Info($"Added Meta Service: {type.FullName} with GUID: {type.GUID}");
+
+			_sourceCodeLocation[metaService] = fileLocation;
+
+			return true;
 		}
 
 		/// <summary>
@@ -163,12 +172,12 @@ namespace Luna.Core
 		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public IMeta? GetMetaService(Guid guid)
 		{
-			if (!_metaServiceByGuid.ContainsKey(guid))
+			if (!_metaServiceByGuid.TryGetValue(guid, out IMeta? value))
 			{
 				return null;
 			}
 
-			return _metaServiceByGuid[guid];
+			return value;
 		}
 
 		/// <summary>
@@ -176,26 +185,29 @@ namespace Luna.Core
 		/// </summary>
 		/// <typeparam name="T">Type of the target.</typeparam>
 		/// <param name="target">Instance of the target.</param>
+		/// <param name="fileLocation">File location of the build service.</param>
 		/// <returns>True if successful, otherwise false.</returns>
-		public bool RegisterTarget<T>(T target) where T : ITarget
+		public bool RegisterTarget<T>(T target, [CallerFilePath] string? fileLocation = null) where T : ITarget
 		{
-			if (target != null)
+			if (target == null)
 			{
-				System.Type type = typeof(T);
-
-				if (GetTarget(type.GUID) != null)
-				{
-					Log.Warning($"Target {type.FullName} was already registered.");
-					return false;
-				}
-
-				_targetByGuid.Add(type.GUID, target);
-				Log.Info($"Added Target: {target.Name} [{type.FullName}] with GUID: {type.GUID}");
-
-				return true;
+				return false;
 			}
 
-			return false;
+			System.Type type = typeof(T);
+
+			if (GetTarget(type.GUID) != null)
+			{
+				Log.Warning($"Target {type.FullName} was already registered.");
+				return false;
+			}
+
+			_targetByGuid.Add(type.GUID, target);
+			Log.Info($"Added Target: {target.Name} [{type.FullName}] with GUID: {type.GUID}");
+
+			_sourceCodeLocation[target] = fileLocation;
+
+			return true;
 		}
 
 		/// <summary>
@@ -216,12 +228,12 @@ namespace Luna.Core
 		/// <returns>Valid instance if available, otherwise Null.</returns>
 		public ITarget? GetTarget(Guid guid)
 		{
-			if (!_targetByGuid.ContainsKey(guid))
+			if (!_targetByGuid.TryGetValue(guid, out ITarget? value))
 			{
 				return null;
 			}
 
-			return _targetByGuid[guid];
+			return value;
 		}
 
 		/// <summary>
@@ -257,6 +269,21 @@ namespace Luna.Core
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Gets the source code location of the given instance.
+		/// </summary>
+		/// <param name="instance">Instance of a luna </param>
+		/// <returns>Source code location if available, otherwise null.</returns>
+		public string? GetSourceCodeLocation<T>(T instance) where T : ILuna
+		{
+			if (!_sourceCodeLocation.TryGetValue(instance, out string? value))
+			{
+				return null;
+			}
+
+			return value;
 		}
 	}
 }

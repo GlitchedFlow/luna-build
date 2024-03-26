@@ -2,7 +2,6 @@ using Luna.BuildScript.Meta;
 using Luna.Core;
 using Luna.Core.Target;
 using Luna.Targets.VisualStudio;
-using Luna.Targets.VisualStudio.Projects.CSharp;
 
 namespace Luna.BuildScript.Core
 {
@@ -20,13 +19,13 @@ namespace Luna.BuildScript.Core
 		/// <returns>The project</returns>
 		public IProject? Generate(ISolution solution)
 		{
-			Project project = new(NAME, "Luna", "D623DB34-0FC2-4858-84BD-676B497943B6".AsGuid(), (Solution)solution);
-
 			ProjectService? projectService = ServiceProvider.RegistryService.GetMetaService<ProjectService>();
 			if (projectService == null)
 			{
-				return project;
+				return null;
 			}
+
+			Project project = new(Project.ProjectToGuid(VisualStudioProjectType.CSharp), NAME, "Luna", "D623DB34-0FC2-4858-84BD-676B497943B6".AsGuid(), (Solution)solution, ProjectService.ProjectExtension);
 
 			using (ProjectService.Scope scope = new(project.ProjectRoot))
 			{
@@ -59,7 +58,8 @@ namespace Luna.BuildScript.Core
 								new("Public\\IOptionService.cs", "Public\\IOptionService.cs"),
 								new("Public\\IPlatformService.cs", "Public\\IPlatformService.cs"),
 								new("Public\\IProfileService.cs", "Public\\IProfileService.cs"),
-								new("Public\\IRegistryService.cs", "Public\\IRegistryService.cs")
+								new("Public\\IRegistryService.cs", "Public\\IRegistryService.cs"),
+								new("Public\\ILuna.cs", "Public\\ILuna.cs")
 							]);
 			}
 

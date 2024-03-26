@@ -11,7 +11,7 @@ namespace Luna.Core
 		/// <summary>
 		/// Gets the singleton instance for the config. If null then config has not yet been loaded.
 		/// </summary>
-		public static LunaConfig? Instance { get; private set; }
+		public static LunaConfig Instance { get; private set; } = new LunaConfig();
 
 		/// <summary>
 		/// Gets or sets the path to the core dll for the luna bridge.
@@ -36,7 +36,7 @@ namespace Luna.Core
 		/// <summary>
 		/// Gets the workspace path.
 		/// </summary>
-		public string WorkspacePath { get; private set; } = "";
+		public string WorkspacePath { get; set; } = "";
 
 		/// <summary>
 		/// Gets or sets the list of plugins which should be loaded.
@@ -65,18 +65,23 @@ namespace Luna.Core
 		/// <returns>True if success, otherwise false.</returns>
 		public static bool Load(string configPath)
 		{
-			if (Instance != null)
-			{
-				return false;
-			}
-
 			if (!File.Exists(configPath))
 			{
 				Log.Error($"Config file doesn't exist. Path: {configPath}");
 				return false;
 			}
 
-			LunaConfig? config = JsonSerializer.Deserialize(File.ReadAllText(configPath), typeof(LunaConfig), LunaConfigSourceGenerationContext.Default) as LunaConfig;
+			LunaConfig? config = null;
+			try
+			{
+				config = JsonSerializer.Deserialize(File.ReadAllText(configPath), typeof(LunaConfig), LunaConfigSourceGenerationContext.Default) as LunaConfig;
+			}
+			catch (System.Exception ex)
+			{
+				Log.Error($"Error loading config file. Provided file: {configPath}");
+				Log.Error($"Error: {ex}");
+			}
+
 			if (config == null)
 			{
 				Log.Error($"Could not read config file.");
@@ -123,6 +128,20 @@ namespace Luna.Core
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Implicit bool operator for the luna config.
+		/// </summary>
+		/// <param name="instance">Instance of the luna config.</param>
+		public static implicit operator bool(LunaConfig instance)
+		{
+			return File.Exists(instance.CorePath) // Core path is valid.
+				&& Directory.Exists(instance.CodePath) // Code path is valid.
+				&& Directory.Exists(instance.MetaPath) // Meta path is valid.
+				&& Directory.Exists(instance.SolutionPath) // Solution path is valid.
+				&& Directory.Exists(instance.WorkspacePath) // Workspace path is valid.
+				&& instance.Targets.Count > 0; // Has targets available.
 		}
 	}
 

@@ -1,4 +1,5 @@
 using Luna.Core.Target;
+using System.Runtime.CompilerServices;
 
 namespace Luna.Core
 {
@@ -12,8 +13,9 @@ namespace Luna.Core
 		/// </summary>
 		/// <typeparam name="T">Type of the build service.</typeparam>
 		/// <param name="buildService">The instance of the build service.</param>
+		/// <param name="fileLocation">File location of the build service.</param>
 		/// <returns>True if successful, otherwise false.</returns>
-		bool RegisterBuildService<T>(T buildService) where T : IBuild;
+		bool RegisterBuildService<T>(T buildService, [CallerFilePath] string? fileLocation = null) where T : IBuild;
 
 		/// <summary>
 		/// Gets a build service based on the given type.
@@ -47,8 +49,9 @@ namespace Luna.Core
 		/// </summary>
 		/// <typeparam name="T">Type of the meta service.</typeparam>
 		/// <param name="metaService">Instance of the meta service.</param>
+		/// <param name="fileLocation">File location of the build service.</param>
 		/// <returns>True if successful, otherwise false.</returns>
-		bool RegisterMetaService<T>(T metaService) where T : IMeta;
+		bool RegisterMetaService<T>(T metaService, [CallerFilePath] string? fileLocation = null) where T : IMeta;
 
 		/// <summary>
 		/// Gets a meta service based on the given type.
@@ -69,8 +72,9 @@ namespace Luna.Core
 		/// </summary>
 		/// <typeparam name="T">Type of the target.</typeparam>
 		/// <param name="target">Instance of the target.</param>
+		/// <param name="fileLocation">File location of the build service.</param>
 		/// <returns>True if successful, otherwise false.</returns>
-		bool RegisterTarget<T>(T target) where T : ITarget;
+		bool RegisterTarget<T>(T target, [CallerFilePath] string? fileLocation = null) where T : ITarget;
 
 		/// <summary>
 		/// Gets a target based on the given type.
@@ -98,6 +102,13 @@ namespace Luna.Core
 		/// <param name="index">Index of the target.</param>
 		/// <returns>Valid target if index is in range, otherwise Null.</returns>
 		ITarget? GetTargetAt(int index);
+
+		/// <summary>
+		/// Gets the source code location of the given instance.
+		/// </summary>
+		/// <param name="instance">Instance of a luna </param>
+		/// <returns>Source code location if available, otherwise false.</returns>
+		string? GetSourceCodeLocation<T>(T instance) where T : ILuna;
 	}
 
 	/// <summary>

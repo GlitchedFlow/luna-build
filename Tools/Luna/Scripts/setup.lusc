@@ -1,0 +1,7 @@
+// Compile bridge
+compile
+
+// Init everything
+init targets
+init plugins
+init bridge
