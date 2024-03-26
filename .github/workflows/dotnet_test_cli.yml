@@ -6,7 +6,7 @@ name: Test CLI
 on:
   workflow_run:
     workflows:
-      - Generate Solution
+      - Build CLI
     types:
       - completed
 
