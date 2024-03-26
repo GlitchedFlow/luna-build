@@ -32,5 +32,5 @@ jobs:
         shell: pwsh
         run: New-Item empty.lusc
       - name: Execute CLI
-        run: ./bin/CLI.exe ./empty.lusc
+        run: dotnet ./bin/CLI.dll ./empty.lusc
   
