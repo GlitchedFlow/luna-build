@@ -21,9 +21,10 @@ jobs:
 
     steps:
       - name: Get Solution
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
           name: solution-artifact
+          github-token: ${{ secrets.GH_PAT }}
           path: ./solution
       - name: Build CLI
         run: dotnet ./solution/Windows/CLI/CLI.csproj
