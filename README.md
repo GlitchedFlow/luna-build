@@ -43,7 +43,7 @@ The luna config can be used to make configurate steps for the luna CLI easier. I
 ```
 
 ## Luna Bridge
-Luna Bridge is the dynamically compiled project that contains all the user code to generate projects and provide custom services for user specific scenarios. The project will be generated in the provided workspace, which can be set via luna config. With it, it is possible to debug user code very easily. Simply open the generated `*.csproj` file from the project in Visual Studio or an IDE which supports `*.csproj*` files.
+Luna Bridge is the dynamically compiled project that contains all the user code to generate projects and provide custom services for user specific scenarios. The project will be generated in the provided workspace, which can be set via luna config. With it, it is possible to debug user code very easily. Simply open the generated `*.csproj` file from the project in Visual Studio or an IDE which supports `*.csproj` files.
 
 ||Extension|Look Up|Interface|
 |:--:|:--:|:--:|:--:|
