@@ -27,9 +27,9 @@ jobs:
           version: 'tags/v1.0'
           file: 'v1.0_Luna.zip'
       - name: Unzip Release
-        run: 7z x luna.zip
+        run: 7z x v1.0_Luna.zip
       - name: Remove zip
-        run: rm luna.zip
+        run: rm v1.0_Luna.zip
       - uses: actions/checkout@v4
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
