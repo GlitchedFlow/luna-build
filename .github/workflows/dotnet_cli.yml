@@ -25,7 +25,7 @@ jobs:
         with:
           repo: 'GlitchedFlow/luna-build'
           version: 'tags/v1.0'
-          file: 'luna.zip'
+          file: 'v1.0_Luna.zip'
       - name: Unzip Release
         run: 7z x luna.zip
       - name: Remove zip
