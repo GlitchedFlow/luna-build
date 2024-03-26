@@ -36,10 +36,11 @@ jobs:
       - name: Build Solution
         run: ./CLI.exe ./Tools/Luna/Scripts/build_windows.lusc
       - name: Upload Solution
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: solution-artifact
           path: ./solution
+          overwrite: true
       - name: Remove zip
         run: rm v1.0_Luna.zip
   
