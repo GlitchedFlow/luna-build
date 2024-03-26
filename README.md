@@ -1,3 +1,6 @@
+[![Generate Solution](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_cli.yml/badge.svg?branch=main)](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_cli.yml)
+[![Build CLI](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_build_cli.yml/badge.svg?branch=main)](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_build_cli.yml)
+
 ## Welcome to Luna build
 
 This repository contains the core modules for the luna build system, which is a C# based meta build system. it can be used to generate Visual Studio 2022 solutions (other IDEs are planned) based on `*.build.cs` files. It provides a CLI, which has support for simple luna scripts (`*.lusc`), as well as a simple UI to allow quick solution generation.
