@@ -35,8 +35,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - name: Execute
-        run: dotnet CLI.dll ./Tools/Luna/Scripts/build_windows.lusc
+      - name: Build Solution
+        run: dotnet ./CLI.dll ./Tools/Luna/Scripts/build_windows.lusc
+      - name: Upload Solution
+        uses: actions/upload-artifact@master
+        with:
+          name: solution-artifact
+          path: ./solution
+          
   build:
     runs-on: ${{ matrix.os }}
 
@@ -45,6 +51,11 @@ jobs:
         os: [ linux-latest, windows-latest, macos-latest ]
 
     steps:
+      - name: Get Solution
+        uses: actions/download-artifact@master
+        with:
+          name: solution-artifact
+          path: ./solution
       - name: Build CLI
-        run: dotnet .\solution\Windows\CLI\CLI.csproj
+        run: dotnet ./solution/Windows/CLI/CLI.csproj
   
