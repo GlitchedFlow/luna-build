@@ -35,12 +35,14 @@ jobs:
           dotnet-version: 8.0.x
       - name: Build Solution
         run: ./CLI.exe ./Tools/Luna/Scripts/build_windows.lusc
+      - name: Remove zip
+        run: rm v1.0_Luna.zip
+      - name: Build CLI
+        run: dotnet build ./solution/Windows/Luna/CLI/CLI.csproj
       - name: Upload Solution
         uses: actions/upload-artifact@v4
         with:
-          name: solution-artifact
-          path: ./solution
+          name: built_cli
+          path: ./bin/AnyCPU_Debug
           overwrite: true
-      - name: Remove zip
-        run: rm v1.0_Luna.zip
   
