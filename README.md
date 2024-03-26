@@ -1,5 +1,5 @@
-[![Generate Solution](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_cli.yml/badge.svg?branch=main)](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_cli.yml)
-[![Build CLI](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_build_cli.yml/badge.svg?branch=main)](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_build_cli.yml)
+[![Building CLI on Windows](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_generate_and_build_cli.yml/badge.svg?branch=main)](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_generate_and_build_cli.yml)
+[![Build CLI](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_test_cli.yml/badge.svg?branch=main)](https://github.com/GlitchedFlow/luna-build/actions/workflows/dotnet_test_cli.yml)
 
 ## Welcome to Luna build
 
