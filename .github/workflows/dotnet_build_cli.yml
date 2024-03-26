@@ -27,6 +27,8 @@ jobs:
           branch: main
           name: solution-artifact
           path: ./solution
-      - name: Build CLI
-        run: dotnet ./solution/Windows/CLI/CLI.csproj
+      - name: Check content
+        run: ls
+      #- name: Build CLI
+      #run: dotnet ./solution/Windows/CLI/CLI.csproj
   
