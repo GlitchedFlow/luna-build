@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET CLI
+name: Generate Solution
 
 on:
   push:
@@ -42,26 +42,4 @@ jobs:
           path: ./solution
       - name: Remove zip
         run: rm v1.0_Luna.zip
-          
-  build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ linux-latest, windows-latest, macos-latest ]
-
-    steps:
-      - name: Wait
-        uses: NathanFirmo/wait-for-other-job@v1.1.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          job: 'generate_sln'
-          failOnJobError: true
-      - name: Get Solution
-        uses: actions/download-artifact@master
-        with:
-          name: solution-artifact
-          path: ./solution
-      - name: Build CLI
-        run: dotnet ./solution/Windows/CLI/CLI.csproj
   
