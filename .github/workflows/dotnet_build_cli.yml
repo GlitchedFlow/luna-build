@@ -1,0 +1,30 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Build CLI
+
+on:
+  workflow_run:
+    workflows:
+      - Generate Solution
+    types:
+      - completed
+    
+
+jobs:        
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ linux-latest, windows-latest, macos-latest ]
+
+    steps:
+      - name: Get Solution
+        uses: actions/download-artifact@master
+        with:
+          name: solution-artifact
+          path: ./solution
+      - name: Build CLI
+        run: dotnet ./solution/Windows/CLI/CLI.csproj
+  
