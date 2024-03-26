@@ -35,10 +35,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - name: List content
-        run: ls
       - name: Execute
-        run: dotnet CLI.dll .\Tools\Luna\Scripts\build_windows.lusc
+        run: dotnet CLI.dll ./Tools/Luna/Scripts/build_windows.lusc
   build:
     runs-on: ${{ matrix.os }}
 
