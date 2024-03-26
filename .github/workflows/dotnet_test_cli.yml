@@ -23,7 +23,7 @@ jobs:
       - name: Get CLI
         uses: dawidd6/action-download-artifact@v3
         with:
-          workflow: dotnet_cli.yml
+          workflow: dotnet_generate_and_build_cli.yml
           workflow_conclusion: success
           branch: main
           name: built_cli
