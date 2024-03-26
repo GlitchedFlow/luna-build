@@ -9,7 +9,6 @@ on:
       - Generate Solution
     types:
       - completed
-    
 
 jobs:        
   build:
@@ -21,10 +20,12 @@ jobs:
 
     steps:
       - name: Get Solution
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v3
         with:
+          workflow: dotnet_cli.yml
+          workflow_conclusion: success
+          branch: main
           name: solution-artifact
-          github-token: ${{ secrets.GH_PAT }}
           path: ./solution
       - name: Build CLI
         run: dotnet ./solution/Windows/CLI/CLI.csproj
