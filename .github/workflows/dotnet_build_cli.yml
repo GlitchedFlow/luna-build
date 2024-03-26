@@ -19,6 +19,7 @@ jobs:
         os: [ linux-latest, windows-latest, macos-latest ]
 
     steps:
+      - uses: actions/checkout@v4
       - name: Get Solution
         uses: dawidd6/action-download-artifact@v3
         with:
@@ -27,8 +28,6 @@ jobs:
           branch: main
           name: solution-artifact
           path: ./solution
-      - name: Check content
-        run: ls
-      #- name: Build CLI
-      #run: dotnet ./solution/Windows/CLI/CLI.csproj
+      - name: Build CLI
+        run: dotnet build ./solution/Windows/Luna/CLI/CLI.csproj
   
