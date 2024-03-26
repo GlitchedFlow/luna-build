@@ -28,6 +28,8 @@ jobs:
           file: 'v1.0_Luna.zip'
       - name: Unzip Release
         run: 7z x v1.0_Luna.zip
+      - name: List All Files
+        run: ls
       - name: Remove zip
         run: rm v1.0_Luna.zip
       - uses: actions/checkout@v4
