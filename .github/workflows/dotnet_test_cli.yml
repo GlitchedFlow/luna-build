@@ -1,0 +1,36 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Test CLI
+
+on:
+  workflow_run:
+    workflows:
+      - Build CLI
+    types:
+      - completed
+
+jobs:        
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get CLI
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: dotnet_generate_and_build_cli.yml
+          workflow_conclusion: success
+          branch: main
+          name: built_cli
+          path: ./bin
+      - name: Create empty script
+        shell: pwsh
+        run: New-Item empty.lusc
+      - name: Execute CLI
+        run: dotnet ./bin/CLI.dll ./empty.lusc
+  
