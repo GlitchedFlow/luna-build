@@ -1,4 +1,7 @@
-﻿namespace Luna.Core
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
+
+namespace Luna.Core
 {
 	/// <summary>
 	/// Base interface for the log service of luna.

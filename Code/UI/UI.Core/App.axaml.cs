@@ -1,4 +1,7 @@
-﻿using Avalonia;
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
+
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;

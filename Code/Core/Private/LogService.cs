@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
 
 namespace Luna.Core
 {
@@ -29,7 +30,7 @@ namespace Luna.Core
 		public bool IsTimestampEnabled { get; set; } = true;
 
 		/// <summary>
-		/// Gets or sets the indetation style for the log.
+		/// Gets or sets the indentation style for the log.
 		/// </summary>
 		public string Indentation { get; set; } = "  ";
 

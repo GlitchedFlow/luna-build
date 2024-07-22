@@ -1,4 +1,7 @@
-﻿using System.Text.Json;
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
+
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Luna.Core

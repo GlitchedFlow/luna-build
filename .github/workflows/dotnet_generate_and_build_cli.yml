@@ -25,10 +25,10 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: 'GlitchedFlow/luna-build'
-          version: 'tags/v1.0'
-          file: 'v1.0_Luna.zip'
+          version: 'tags/v1.1'
+          file: 'v1.1_Luna.zip'
       - name: Unzip Release
-        run: 7z x v1.0_Luna.zip
+        run: 7z x v1.1_Luna.zip
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -36,7 +36,7 @@ jobs:
       - name: Build Solution
         run: ./CLI.exe ./Tools/Luna/Scripts/build_windows.lusc
       - name: Remove zip
-        run: rm v1.0_Luna.zip
+        run: rm v1.1_Luna.zip
       - name: Build CLI
         run: dotnet build ./solution/Windows/Luna/CLI/CLI.csproj
       - name: Upload Solution

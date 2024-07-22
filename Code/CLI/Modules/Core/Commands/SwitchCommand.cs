@@ -1,3 +1,6 @@
+// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
+
 using Luna.Core;
 
 namespace Luna.CLI.Modules.Core
@@ -9,7 +12,7 @@ namespace Luna.CLI.Modules.Core
 	public class SwitchCommand(string name) : BaseCommand
 	{
 		/// <summary>
-		/// Gets the name of the commmand.
+		/// Gets the name of the command.
 		/// </summary>
 		public override string Name => name.ToLower();
 

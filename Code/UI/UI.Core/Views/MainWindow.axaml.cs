@@ -1,4 +1,7 @@
-﻿using Avalonia.Controls;
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
+
+using Avalonia.Controls;
 
 namespace Luna.UI.Views;
 

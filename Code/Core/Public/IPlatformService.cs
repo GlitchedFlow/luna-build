@@ -1,4 +1,7 @@
-﻿namespace Luna.Core
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
+
+namespace Luna.Core
 {
 	/// <summary>
 	/// Core service interface that is used to handle supported platforms (e.g. x64, x86, Any CPU)

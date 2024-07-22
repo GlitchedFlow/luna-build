@@ -1,4 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
+
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Luna.UI.ViewModels;
 

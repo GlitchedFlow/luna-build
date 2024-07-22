@@ -1,4 +1,5 @@
-﻿using Luna.Core.Target;
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
 
 namespace Luna.Core
 {

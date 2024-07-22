@@ -4,7 +4,7 @@
 
 ## Welcome to Luna build
 
-This repository contains the core modules for the luna build system, which is a C# based meta build system. it can be used to generate Visual Studio 2022 solutions (other IDEs are planned) based on `*.build.cs` files. It provides a CLI, which has support for simple luna scripts (`*.lusc`), as well as a simple UI to allow quick solution generation.
+This repository contains the core modules for the luna build system, which is a C# based meta build system. It can be used to generate Visual Studio 2022 solutions (other IDEs are planned) based on `*.luna.cs` files. It provides a CLI, which has support for simple luna scripts (`*.lusc`), as well as a simple UI to allow quick solution generation. Inspired by CMake but planned with an easier entry level when it comes to debuggability, since it is possible to attach the VS debugger at any point.
 
 ## License
 MIT
@@ -25,7 +25,7 @@ MIT
 [Avalonia UI](https://marketplace.visualstudio.com/items?itemName=AvaloniaTeam.AvaloniaVS) [Only for UI project]
 
 ## Get started
-Make sure the requirements are installed then download the [1.0 release](https://github.com/GlitchedFlow/luna-build/releases/tag/v1.0), extract it and execute the CLI with the path to the `%RepoRoot%\Tools\Luna\Scripts\build_windows.lusc` script as argument. This will generate the solution for Visual Studio 2022 under `%RepoRoot%\solution\Windows\Luna_Windows.sln`, which can be used to compile luna-build.
+Make sure the requirements are installed then download the [1.1 release](https://github.com/GlitchedFlow/luna-build/releases/tag/v1.1), extract it and execute the CLI with the path to the `%RepoRoot%\Tools\Luna\Scripts\build_windows.lusc` script as argument. This will generate the solution for Visual Studio 2022 under `%RepoRoot%\solution\Windows\Luna_Windows.sln`, which can be used to compile luna-build.
 
 ## Luna Config
 The luna config can be used to make configurate steps for the luna CLI easier. It can be loaded via the `load` command in the core module.
@@ -33,8 +33,8 @@ The luna config can be used to make configurate steps for the luna CLI easier. I
 {
 	"Name": "Luna", <- Main name of the solution that gets generated
 	"SolutionPath": "%path_to_solution%",  <- Path to where the solution should be generated
-	"CodePath": "%path_to_code%", <- Path to where the code modules are located which contain *.build.cs files
-	"MetaPath": "%path_to_meta%", <- Path to where the meta sevices are located which contain *.meta.cs files
+	"CodePath": "%path_to_code%", <- Path to where the code modules are located as *.luna.cs files
+	"MetaPath": "%path_to_meta%", <- Path to where the meta sevices are located as *.luna.cs files
 	"CorePath": "%path_to_core%", <- Path to where LunaCore.dll is located [OPTIONAL]
 	"WorkspacePath": "%path_to_workspace%", <- Sets the workspace path for luna. Used for plugin and target look ups
 	"Plugins": [
@@ -49,18 +49,18 @@ The luna config can be used to make configurate steps for the luna CLI easier. I
 ## Luna Bridge
 Luna Bridge is the dynamically compiled project that contains all the user code to generate projects and provide custom services for user specific scenarios. The project will be generated in the provided workspace, which can be set via luna config. With it, it is possible to debug user code very easily. Simply open the generated `*.csproj` file from the project in Visual Studio or an IDE which supports `*.csproj` files.
 
-||Extension|Look Up|Interface|
-|:--:|:--:|:--:|:--:|
-|Meta Services|.meta.cs|%Meta Path%\\**\\*.meta.cs|Luna.Core.IMeta
-|Build Services|.build.cs|%Code Path%\\**\\*.build.cs|Luna.Core.IBuild
+|Service Type|Description|Interface|
+|:--:|:--:|:--:|
+|Meta Service|Used to provide a service that can be used during project/solution generation|Luna.Core.IMeta
+|Build Service|Used to kick off generation of a project|Luna.Core.IBuild
 
 ## Command Line Arguments
 ```ps
-.\CLI.exe %Path_to_luna_script% [--help]
+.\CLI.exe %path_to_luna_script% [--help]
 ```
 |Argument|Description|
 |:--:|:--:|
-|%Path_to_luna_script%|Path to a script file [Optional]|
+|%path_to_luna_script%|Path to a script file [Optional]|
 |--help| Prints help information|
 
 ## Suggested Configuration Steps

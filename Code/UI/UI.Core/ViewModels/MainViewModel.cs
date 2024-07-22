@@ -1,4 +1,7 @@
-﻿using Avalonia.Platform.Storage;
+﻿// Copyright 2024 - Florian Hoeschel
+// Licensed to you under MIT license.
+
+using Avalonia.Platform.Storage;
 using Luna.CLI;
 using Luna.Core;
 using Luna.Core.Target;
