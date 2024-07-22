@@ -22,7 +22,7 @@ namespace Luna.Core
 													+ "%Luna.Bridge.Targets%"
 												+ "\t</ItemGroup>\r\n\r\n"
 												+ "\t<ItemGroup>\r\n"
-													+ "\t\t<Compile Include=\"%Luna.Bridge.Build%\" />\r\n"
+													+ "\t\t<Compile Include=\"%Luna.Bridge.Code%\" />\r\n"
 													+ "\t\t<Compile Include=\"%Luna.Bridge.Meta%\" />\r\n"
 												+ "\t</ItemGroup>\r\n"
 											+ "</Project>\r\n";
@@ -92,8 +92,8 @@ namespace Luna.Core
 			}
 
 			string finalProject = _bridgeProject.Replace("%Luna.Core.dll%", LunaConfig.Instance.CorePath)
-												.Replace("%Luna.Bridge.Build%", Path.Combine(LunaConfig.Instance.CodePath, "**\\*.build.cs"))
-												.Replace("%Luna.Bridge.Meta%", Path.Combine(LunaConfig.Instance.MetaPath, "**\\*.meta.cs"))
+												.Replace("%Luna.Bridge.Code%", Path.Combine(LunaConfig.Instance.CodePath, "**\\*.luna.cs"))
+												.Replace("%Luna.Bridge.Meta%", Path.Combine(LunaConfig.Instance.MetaPath, "**\\*.luna.cs"))
 												.Replace("%Luna.Bridge.Plugins%", plugins)
 												.Replace("%Luna.Bridge.Targets%", targets);
 

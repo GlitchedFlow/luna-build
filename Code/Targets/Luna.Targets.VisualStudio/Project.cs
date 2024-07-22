@@ -81,7 +81,7 @@ namespace Luna.Targets.VisualStudio
 
 			string projectDir = $"{RelativePath}\\{Name}\\";
 			string projectFile = $"{projectDir}{Name}.{Extension}";
-			logService?.Log($"Writing Project: {projectFile}");
+			logService?.Log($"{projectFile} : Writing");
 
 			string fileBuffer = "";
 			WriteTreeToBuffer(ProjectRoot, ref fileBuffer);
@@ -95,7 +95,7 @@ namespace Luna.Targets.VisualStudio
 
 			File.WriteAllText(fullProjectFilePath, fileBuffer);
 
-			logService?.Log("Done");
+			logService?.Log($"{projectFile} : Writing done");
 			return true;
 		}
 
@@ -106,23 +106,13 @@ namespace Luna.Targets.VisualStudio
 		/// <returns>Visual Studio guid for given project type.</returns>
 		public static Guid ProjectToGuid(VisualStudioProjectType type)
 		{
-			switch (type)
+			return type switch
 			{
-				case VisualStudioProjectType.None:
-					return Guid.Empty;
-
-				case VisualStudioProjectType.CSharp:
-					return "{9A19103F-16F7-4668-BE54-9A1E7A4F7556}".AsGuid();
-
-				case VisualStudioProjectType.Cpp:
-					return "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}".AsGuid();
-
-				case VisualStudioProjectType.Folder:
-					return "{2150E333-8FDC-42A3-9474-1A3956D46DE8}".AsGuid();
-
-				default:
-					return Guid.Empty;
-			}
+				VisualStudioProjectType.CSharp => "{9A19103F-16F7-4668-BE54-9A1E7A4F7556}".AsGuid(),
+				VisualStudioProjectType.Cpp => "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}".AsGuid(),
+				VisualStudioProjectType.Folder => "{2150E333-8FDC-42A3-9474-1A3956D46DE8}".AsGuid(),
+				_ => Guid.Empty,
+			};
 		}
 
 		/// <summary>

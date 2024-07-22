@@ -1,9 +1,7 @@
 ﻿using Luna.Core;
 using Luna.Core.Target;
-using Microsoft.VisualBasic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
 
 namespace Luna.Targets.VisualStudio
 {
@@ -112,48 +110,51 @@ namespace Luna.Targets.VisualStudio
 
 			logService?.Log($"Started at {startTime.ToLocalTime().ToShortTimeString()}");
 
-			logService?.Log($"Generating solution...");
+			logService?.Log($"Solution : Generating");
 
-			foreach (KeyValuePair<string, Project> project in _projects)
+			using (LogScope scope = new())
 			{
-				if (!IsProjectUpdateRequired(project))
+				foreach (KeyValuePair<string, Project> project in _projects)
 				{
-					continue;
+					if (!IsProjectUpdateRequired(project))
+					{
+						continue;
+					}
+
+					project.Value.WriteFile();
+					CacheProject(project);
 				}
 
-				project.Value.WriteFile();
-				CacheProject(project);
+				Directory.CreateDirectory(Path.GetDirectoryName(SolutionPath) ?? "");
+
+				IProfileService? profileService = ServiceProvider.ProfileService;
+				IPlatformService? platformService = ServiceProvider.PlatformService;
+
+				if (profileService == null || platformService == null)
+				{
+					logService?.LogError("Profile and platform are required.");
+					logService?.LogError("Generating solution failed.");
+					return false;
+				}
+
+				if (IsSolutionUpdateRequired(profileService, platformService))
+				{
+					string template = _solutionTemplate;
+
+					WriteProjects(ref template, profileService, platformService);
+
+					WritePlatforms(ref template, profileService, platformService);
+
+					WriteNestedProjects(ref template, WriteFolders(ref template));
+
+					template = template.Replace("%Visual.Studio.SolutionGuid%", $"{{{Guid}}}");
+					File.WriteAllText(SolutionPath, template);
+
+					CacheSolution(profileService, platformService);
+				}
 			}
 
-			Directory.CreateDirectory(Path.GetDirectoryName(SolutionPath) ?? "");
-
-			IProfileService? profileService = ServiceProvider.ProfileService;
-			IPlatformService? platformService = ServiceProvider.PlatformService;
-
-			if (profileService == null || platformService == null)
-			{
-				logService?.LogError("Profile and platform are required.");
-				logService?.LogError("Generating solution failed.");
-				return false;
-			}
-
-			if (IsSolutionUpdateRequired(profileService, platformService))
-			{
-				string template = _solutionTemplate;
-
-				WriteProjects(ref template, profileService, platformService);
-
-				WritePlatforms(ref template, profileService, platformService);
-
-				WriteNestedProjects(ref template, WriteFolders(ref template));
-
-				template = template.Replace("%Visual.Studio.SolutionGuid%", $"{{{Guid}}}");
-				File.WriteAllText(SolutionPath, template);
-
-				CacheSolution(profileService, platformService);
-			}
-
-			logService?.Log("Done");
+			logService?.Log("Solution : Generating done");
 
 			TimeSpan deltaTime = DateTime.Now - startTime;
 			logService?.Log($"Completed at {startTime.ToLocalTime().ToShortTimeString()} and took {deltaTime}");
