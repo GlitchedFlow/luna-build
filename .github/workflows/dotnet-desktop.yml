@@ -37,6 +37,6 @@ jobs:
       - name: Build Solution
         run: ./CLI.exe ./Tools/Luna/Scripts/build_windows.lusc
       - name: Remove zip
-        run: rm v1.0_Luna.zip
+        run: rm v1.1_Luna.zip
       - name: Build CLI
         run: dotnet build ./solution/Windows/Luna/UI/UI.Desktop/UI.Desktop.csproj
